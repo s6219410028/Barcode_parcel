@@ -1,0 +1,28 @@
+body {
+    font-family: sans-serif;
+  }
+  
+  .input-container {
+    width: 400px;
+    margin: 20px auto;
+    border: 1px solid #ccc;
+    padding: 20px;
+  }
+  
+  .input-container label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }
+  
+  .input-container select,
+  .input-container input {
+    width: calc(100% - 12px);
+    padding: 5px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+  }
+  
+  .input-container button {
+    padding: 10px 20px;
+    background: #f1f1f1;}
