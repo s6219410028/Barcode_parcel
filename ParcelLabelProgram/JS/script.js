@@ -74,6 +74,7 @@ function generateTableForPrint(company, container) {
   table.style.width = '90%';
   table.style.marginLeft = 'auto';
   table.style.marginRight = 'auto';
+  table.style.marginBottom = '20px';  // <---- ADD MARGIN BOTTOM FOR SPACING
 
   const tableBody = table.createTBody();
 
@@ -213,33 +214,60 @@ function generateTableForPrint(company, container) {
 
 
 function printTable(company) {
-  const printWindow = window.open('', '_blank');
-  if (printWindow) {
-    const container = printWindow.document.createElement('div');
-    generateTableForPrint(company, container);
-    printWindow.document.body.appendChild(container);
+  const printCount = parseInt(document.getElementById('printCountGeneral').value, 10);
 
-    // Add Print Button to the new window:
-    const printButton = printWindow.document.createElement('button');
-    printButton.textContent = 'Print Label'; // Button text
-    printButton.onclick = () => { printWindow.print(); }; // Print action
-    printButton.style.display = 'block';
-    printButton.style.margin = '20px auto';
-    printButton.style.padding = '10px 20px';
-    printWindow.document.body.appendChild(printButton);
-
-
-    printWindow.document.body.onload = () => {
-      // printWindow.print(); // FOR NOW, COMMENT OUT AUTO-PRINT
-      // printWindow.onafterprint = () => {
-      //     printWindow.close();
-      // };
-    };
+  if (isNaN(printCount) || printCount < 1 || printCount > 3) {
+    alert("Please enter a valid number of labels per page (1-3).");
+    return;
   }
+
+  let printWindow = window.open('', '_blank');
+  if (!printWindow) {
+    alert('Please allow pop-ups for this website to print labels.');
+    return;
+  }
+
+  const container = printWindow.document.createElement('div');
+  // Generate tables based on print count
+  for (let i = 0; i < printCount; i++) {
+    generateTableForPrint(company, container);
+  }
+  printWindow.document.body.appendChild(container);
+
+  // Add Print Button to the new window:
+  const printButton = printWindow.document.createElement('button');
+  printButton.textContent = 'Print Label'; // Button text
+  printButton.onclick = () => { printWindow.print(); }; // Print action
+  printButton.style.display = 'block';
+  printButton.style.margin = '20px auto';
+  printButton.style.padding = '10px 20px';
+  printWindow.document.body.appendChild(printButton);
+
+
+  // Add CSS to hide buttons in print view
+  const printStyle = printWindow.document.createElement('style');
+  printStyle.textContent = `
+  @media print {
+    button {
+      display: none !important;
+    }
+  }
+`;
+  printWindow.document.head.appendChild(printStyle);
+
+
+  printWindow.document.body.onload = () => {
+    // printWindow.print(); // FOR NOW, COMMENT OUT AUTO-PRINT
+    // printWindow.onafterprint = () => {
+    //     printWindow.close();
+    // };
+  };
 }
 
 
 function printAllTables() {
+  const printCount = parseInt(document.getElementById('printCountGeneral').value, 10); // Get general print count
+
   const printWindow = window.open('', '_blank');
   if (!printWindow) {
     alert('Popup blocker may be preventing the print window from opening. Please allow popups for this site.');
@@ -261,13 +289,19 @@ function printAllTables() {
   if (productASelected) {
     const companyAContainer = printWindow.document.createElement('div');
     companyAContainer.innerHTML = '<h2>Company A Label:</h2>'; // Add a heading
-    generateTableForPrint('companyA', companyAContainer);
+    // Generate tables for Company A based on print count
+    for (let i = 0; i < printCount; i++) {
+      generateTableForPrint('companyA', companyAContainer);
+    }
     container.appendChild(companyAContainer);
   }
   if (productBSelected) {
     const companyBContainer = printWindow.document.createElement('div');
     companyBContainer.innerHTML = '<h2>Company B Label:</h2>'; // Add a heading
-    generateTableForPrint('companyB', companyBContainer);
+    // Generate tables for Company B based on print count
+    for (let i = 0; i < printCount; i++) {
+      generateTableForPrint('companyB', companyBContainer);
+    }
     container.appendChild(companyBContainer);
   }
   printWindow.document.body.appendChild(container);
@@ -281,6 +315,17 @@ function printAllTables() {
   printButton.style.margin = '20px auto';
   printButton.style.padding = '10px 20px';
   printWindow.document.body.appendChild(printButton);
+
+  // Add CSS to hide buttons in print view
+  const printStyle = printWindow.document.createElement('style');
+  printStyle.textContent = `
+  @media print {
+    button {
+      display: none !important;
+    }
+  }
+`;
+  printWindow.document.head.appendChild(printStyle);
 
 
   printWindow.document.body.onload = () => {
@@ -300,9 +345,17 @@ function generateTable(company) {
   container.innerHTML = '';
 
   // Generate tables based on the print count
-  for (let i = 0; i < printCount; i++) { // Loop to generate multiple tables
-    generateTableForPrint(company, container);
+  for (let i = 0; i < printCount; i++) {
+    const tableContainer = document.createElement('div'); // Create a div to hold each table
+    generateTableForPrint(company, tableContainer);
+    container.appendChild(tableContainer);
   }
+
+  // Add margin to the container of the displayed tables
+  container.style.display = 'flex';         // Use flexbox for layout
+  container.style.flexDirection = 'column';  // Stack tables vertically
+  container.style.gap = '20px';             // Add 20px gap between tables
+
 }
 
 
