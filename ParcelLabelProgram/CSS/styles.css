@@ -1,28 +1,115 @@
 body {
-    font-family: sans-serif;
+  font-family: sans-serif;
+}
+
+.input-container {
+  width: 400px;
+  margin: 20px auto;
+  border: 1px solid #ccc;
+  padding: 20px;
+}
+
+.input-container label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.input-container select,
+.input-container input {
+  width: calc(100% - 12px);
+  padding: 5px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+}
+
+.input-container button {
+  padding: 10px 20px;
+  background: #f1f1f1;
+}
+
+@media print {
+  body > *:not(#print-container) {
+    /* Hide everything directly inside body EXCEPT print-container */
+    visibility: hidden;
   }
-  
-  .input-container {
-    width: 400px;
-    margin: 20px auto;
-    border: 1px solid #ccc;
-    padding: 20px;
+  #print-container,
+  #print-container * {
+    visibility: visible; /* Make print-container and its content visible */
   }
-  
-  .input-container label {
+  #print-container {
     display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
+    width: 100%;
+    margin: 0;
+    padding: 0;
   }
-  
-  .input-container select,
-  .input-container input {
-    width: calc(100% - 12px);
+  #print-container table {
+    border-collapse: collapse;
+    width: 90%; /* 90% width as requested */
+    font-size: 12pt;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 20mm;
+    page-break-inside: avoid;
+    display: block;
+    page-break-before: always;
+  }
+
+  #print-container table:first-of-type {
+    page-break-before: avoid; /* Avoid page break for the very first label */
+  }
+
+  #print-container th,
+  #print-container td {
+    border: 1px solid black;
     padding: 5px;
-    margin-bottom: 10px;
-    border: 1px solid #ccc;
+    text-align: left;
+    vertical-align: top;
+    box-sizing: border-box;
   }
-  
-  .input-container button {
-    padding: 10px 20px;
-    background: #f1f1f1;}
+
+  #print-container tbody tr:first-child td {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.4em;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+  }
+  #print-container tbody tr:nth-child(2) td {
+    display: block;
+    width: 100%;
+    text-align: center;
+    font-size: 1.2em;
+    padding-bottom: 5px;
+    box-sizing: border-box;
+  }
+
+  #print-container tbody tr:nth-child(5) td,
+  #print-container tbody tr:nth-child(6) td {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  #print-container tbody tr:nth-child(6) td {
+    padding-left: 10px;
+  }
+
+  #print-container svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  #print-container tbody tr:nth-child(5) td {
+    width: 100%;
+    padding: 0 !important;
+  }
+
+  /* Hide the "Company Name for Labels:" label in print */
+  body > div > label[for="generalCompanyName"] {
+    display: none;
+  }
+}

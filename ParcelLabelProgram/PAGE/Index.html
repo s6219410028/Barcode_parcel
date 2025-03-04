@@ -12,45 +12,19 @@
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
-
-    <style>
-      @media print {
-        body * {
-          /* Apply to all elements inside body when printing */
-          visibility: hidden; /* Hide everything by default */
-        }
-        #tocTable,
-        #tocTable * {
-          /* Then, make the table and its contents visible */
-          visibility: visible;
-        }
-        #tocTable {
-          /* Position the table to the top-left of the printed page */
-          position: absolute;
-          left: 0;
-          top: 0;
-          margin: 0; /* Reset margins for print */
-          padding: 0; /* Reset padding for print */
-        }
-        /* Optional: Add some basic styling for the table on print */
-        #tocTable {
-          border-collapse: collapse; /* Single borders */
-          width: 100%; /* Take full width of printed area */
-          font-size: 12pt; /* Adjust font size for print if needed */
-        }
-        #tocTable th,
-        #tocTable td {
-          border: 1px solid black; /* Add borders for print */
-          padding: 5px;
-          text-align: left;
-        }
-      }
-    </style>
   </head>
-
   <body>
-    <h2>บริษัท เอ็กซ์เพรสเมด จำกัด</h2>
+    <h2>Parcel Label Generator</h2>
+    <h2>บริษัท ที.แมน ฟาร์มา จำกัด</h2>
     <div class="input-container" id="companyAForm">
+      <div style="margin-bottom: 10px">
+        <label for="companyNameA">Company Name:</label>
+        <select id="companyNameA" disabled>
+          <option value="บริษัท เอ็กซ์เพรสเมด จำกัด">
+            บริษัท เอ็กซ์เพรสเมด จำกัด
+          </option>
+        </select>
+      </div>
       <label for="productNameEngA">Product Name (Eng):</label>
       <select
         id="productNameEngA"
@@ -61,7 +35,6 @@
         <option value="product2A">Product B (Eng)</option>
         <option value="product3A">Product C (Eng)</option>
       </select>
-
       <label for="productNameThA">Product Name (Thai):</label>
       <select id="productNameThA">
         <option value="">Select Product (Thai)</option>
@@ -69,7 +42,6 @@
         <option value="Product B (Thai)">Product B (Thai)</option>
         <option value="Product C (Thai)">Product C (Thai)</option>
       </select>
-
       <label for="barcodeA">Barcode:</label>
       <select id="barcodeA">
         <option value="">Select Barcode</option>
@@ -77,7 +49,6 @@
         <option value="9876543210">9876543210</option>
         <option value="111222333444">111222333444</option>
       </select>
-
       <label for="mfgA">MFG:</label>
       <select id="mfgA">
         <option value="">Select MFG</option>
@@ -85,7 +56,6 @@
         <option value="17-02-26">17-02-26</option>
         <option value="18-03-27">18-03-27</option>
       </select>
-
       <label for="lotA">LOT:</label>
       <select id="lotA">
         <option value="">Select LOT</option>
@@ -93,7 +63,6 @@
         <option value="2066804">2066804</option>
         <option value="2066805">2066805</option>
       </select>
-
       <label for="expA">EXP:</label>
       <select id="expA">
         <option value="">Select EXP</option>
@@ -101,7 +70,6 @@
         <option value="23-03-28">23-03-28</option>
         <option value="24-04-29">24-04-29</option>
       </select>
-
       <label for="unitA">UNIT:</label>
       <select id="unitA">
         <option value="">Select UNIT</option>
@@ -109,14 +77,20 @@
         <option value="30x8x70cc">30x8x70cc</option>
         <option value="36x10x80cc">36x10x80cc</option>
       </select>
-
       <button onclick="generateTable('companyA')">
         Generate Table (Company A)
       </button>
+      <button onclick="printTable('companyA')">Print Label (Company A)</button>
     </div>
 
-    <h2>Company B Label</h2>
+    <h2>Company B Labels</h2>
     <div class="input-container" id="companyBForm">
+      <div style="margin-bottom: 10px">
+        <label for="companyNameB">Company Name:</label>
+        <select id="companyNameB" disabled>
+          <option value="Company B">Company B</option>
+        </select>
+      </div>
       <label for="productNameB">Product Name (Eng):</label>
       <select
         id="productNameB"
@@ -127,17 +101,16 @@
         <option value="product2B">Product B (Eng)</option>
         <option value="product3B">Product C (Eng)</option>
       </select>
-
       <label for="productNameThB">Product Name (Thai):</label>
       <select id="productNameThB">
         <option value="">Select Product (Thai)</option>
         <option value="มะแว้ง-เออีซี ไอยราแดง 7-11">
           มะแว้ง-เออีซี ไอยราแดง 7-11
         </option>
-        <option value="Product B (Thai)">Product B (Thai)</option>
-        <option value="Product C (Thai)">Product C (Thai)</option>
+        <option value="ยาB">ยาB</option>
+        <option value="ยาC">ยาC</option>
       </select>
-
+      
       <label for="barcodeB">Barcode:</label>
       <select id="barcodeB">
         <option value="">Select Barcode</option>
@@ -145,7 +118,6 @@
         <option value="9876543210">9876543210</option>
         <option value="111222333444">111222333444</option>
       </select>
-
       <label for="mfgB">MFG:</label>
       <select id="mfgB">
         <option value="">Select MFG</option>
@@ -153,7 +125,6 @@
         <option value="17-02-26">17-02-26</option>
         <option value="18-03-27">18-03-27</option>
       </select>
-
       <label for="lotB">LOT:</label>
       <select id="lotB">
         <option value="">Select LOT</option>
@@ -161,7 +132,6 @@
         <option value="2066804">2066804</option>
         <option value="2066805">2066805</option>
       </select>
-
       <label for="expB">EXP:</label>
       <select id="expB">
         <option value="">Select EXP</option>
@@ -169,7 +139,6 @@
         <option value="23-03-28">23-03-28</option>
         <option value="24-04-29">24-04-29</option>
       </select>
-
       <label for="unitB">UNIT:</label>
       <select id="unitB">
         <option value="">Select UNIT</option>
@@ -177,10 +146,10 @@
         <option value="30x8x70cc">30x8x70cc</option>
         <option value="36x10x80cc">36x10x80cc</option>
       </select>
-
       <button onclick="generateTable('companyB')">
         Generate Table (Company B)
       </button>
+      <button onclick="printTable('companyB')">Print Label (Company B)</button>
     </div>
 
     <table id="tocTable">
@@ -192,7 +161,11 @@
       <tbody></tbody>
     </table>
 
-    <button onclick="printTable()">Print Label</button>
+    <div style="margin-top: 10px">
+      <label for="printCountGeneral">Labels per page (1-3):</label>
+      <input type="number" id="printCountGeneral" value="1" min="1" max="3" />
+      <button onclick="printAllTables()">Print All Labels</button>
+    </div>
 
     <script>
       const productData = {
@@ -232,7 +205,7 @@
             unitB: "24x6x60cc",
           },
           product2B: {
-            productNameThB: "Product B (Thai)",
+            productNameThB: "ยาB", // <---- IS THIS PRESENT AND CORRECT?
             barcodeB: "9876543210",
             mfgB: "17-02-26",
             lotB: "2066804",
@@ -240,7 +213,7 @@
             unitB: "30x8x70cc",
           },
           product3B: {
-            productNameThB: "Product C (Thai)",
+            productNameThB: "ยาC", // <---- IS THIS PRESENT AND CORRECT?
             barcodeB: "111222333444",
             mfgB: "18-03-27",
             lotB: "2066805",
@@ -250,6 +223,7 @@
         },
       };
     </script>
+
     <script src="/ParcelLabelProgram/JS/script.js"></script>
   </body>
 </html>
