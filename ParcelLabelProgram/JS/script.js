@@ -38,21 +38,109 @@ function generateTableForPrint(company, container) {
   let barcode = "";
 
   if (company === 'companyA') {
+    // --- COMPANY A: IMAGE-LIKE SIMPLIFIED TABLE FORMAT ---
     data["Company Name"] = document.getElementById("companyNameA").value;
-    data["Brand Name"] = "IYARA ABC";
     data["Product Name"] = document.getElementById("productNameEngA").value;
-    data["Product Name TH"] = document.getElementById("productNameThA").value;
     barcode = document.getElementById("barcodeA").value;
     data["Barcode"] = barcode;
     data["LOT"] = document.getElementById("lotA").value;
     data["MFG"] = document.getElementById("mfgA").value;
     data["EXP"] = document.getElementById("expA").value;
     data["บรรจุ"] = document.getElementById("unitA").value;
-    data["QTY"] = "80.00";
-    data["Name"] = "บริษัท ข.";
-    data["GHI"] = "GHI0206HHA";
+
+
+    const table = document.createElement('table');
+    table.id = "tocTable-print";
+    table.style.borderCollapse = 'collapse';
+    table.style.width = '90%';
+    table.style.marginLeft = 'auto';
+    table.style.marginRight = 'auto';
+    table.style.marginBottom = '20px';
+
+    const tableBody = table.createTBody();
+
+    // 1. Main Company Name Row (LARGE FONT, TOP)
+    if (data["Company Name"]) {
+      let row = tableBody.insertRow();
+      let cell1 = row.insertCell(0);
+      cell1.innerHTML = data["Company Name"];
+      cell1.classList.add("company-name-a-main"); // NEW CLASS for Company A Main Name
+      cell1.style.border = '1px solid black';
+      cell1.style.textAlign = 'center';
+      cell1.colSpan = 2;
+    }
+
+    // 2. General Company Name (LESS PROMINENT)
+    let generalCompanyNameRow = tableBody.insertRow();
+    let generalCompanyNameCell = generalCompanyNameRow.insertCell(0);
+    generalCompanyNameCell.innerHTML = "บริษัท ที.แมน ฟาร์มา จำกัด";
+    generalCompanyNameCell.classList.add("general-company-name-a"); // NEW CLASS for Company A General Name
+    generalCompanyNameCell.style.border = '1px solid black';
+    generalCompanyNameCell.style.textAlign = 'center';
+    generalCompanyNameCell.colSpan = 2;
+
+    // 4. Product Name Row ("PRODUCT CODE:" INLINE)
+    if (data["Product Name"]) {
+      let row = tableBody.insertRow();
+      let cell1 = row.insertCell(0);
+      cell1.innerHTML = "PRODUCT CODE : <span class='product-value-a'>" + data["Product Name"] + "</span>"; // SPAN for Product Value
+      cell1.classList.add("product-code-row-a"); // NEW CLASS for Product Code Row
+      cell1.style.border = '1px solid black';
+      cell1.style.textAlign = 'left'; // Left align Product Code for better image match
+      cell1.style.paddingLeft = '5px'; // Add some padding to the left
+      cell1.colSpan = 2;
+    }
+
+
+    // 6. Barcode Row (BELOW PRODUCT CODE)
+    if (data["Barcode"]) {
+      let barcodeRow = tableBody.insertRow();
+      let barcodeCell = barcodeRow.insertCell(0);
+
+      const barcodeSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      JsBarcode(barcodeSVG, data["Barcode"], {
+        format: "CODE128",
+        displayValue: true,
+        displayValue: true,
+        width: 1.5,
+        height: 60
+      });
+      barcodeCell.appendChild(barcodeSVG);
+      barcodeCell.colSpan = 2;
+      barcodeCell.style.border = '1px solid black';
+      barcodeCell.style.textAlign = 'center';
+
+
+      // 7. MFG, LOT, EXP Row - Below Barcode (VERTICAL LAYOUT)
+      let mfgLotExpRow = tableBody.insertRow();
+      let mfgLotExpCell = mfgLotExpRow.insertCell(0);
+      mfgLotExpCell.colSpan = 2;
+      mfgLotExpCell.classList.add("mfg-lot-unit-cell-a"); // NEW CLASS for MFG/LOT/UNIT Cell
+      mfgLotExpCell.style.border = '1px solid black';
+      mfgLotExpCell.style.textAlign = 'left'; // Left align MFG/LOT/UNIT
+      mfgLotExpCell.style.paddingLeft = '5px';
+
+
+      let mfgLotExpContent = "";
+      if (data["MFG"]) { // MFG ON TOP LINE
+        mfgLotExpContent += "MFG:<span class='value-span'>" + data["MFG"] + "</span><br>"; // <br> for line break
+      }
+      if (data["LOT"]) { // LOT ON MIDDLE LINE
+        mfgLotExpContent += "LOT:<span class='value-span'>" + data["LOT"] + "</span><br>"; // <br> for line break
+      }
+      if (data["บรรจุ"]) { // UNIT (บรรจุ) ON BOTTOM LINE
+        mfgLotExpContent += "UNIT:<span class='value-span'>" + data["บรรจุ"] + "</span>"; // Changed to UNIT for consistency
+      }
+      mfgLotExpCell.innerHTML = mfgLotExpContent;
+    }
+
+
+    table.appendChild(tableBody);
+    container.appendChild(table);
+
 
   } else if (company === 'companyB') {
+    // --- COMPANY B:  NO CHANGES IN THIS STEP - KEEP ORIGINAL FORMAT ---
     data["Company Name"] = document.getElementById("companyNameB").value;
     data["Brand Name"] = "IYARA ABC";
     data["Product Name"] = document.getElementById("productNameB").value;
@@ -66,150 +154,150 @@ function generateTableForPrint(company, container) {
     data["QTY"] = "80.00";
     data["Name"] = "บริษัท ข.";
     data["GHI"] = "GHI0206HHA";
-  }
 
-  const table = document.createElement('table');
-  table.id = "tocTable-print";
-  table.style.borderCollapse = 'collapse';
-  table.style.width = '90%';
-  table.style.marginLeft = 'auto';
-  table.style.marginRight = 'auto';
-  table.style.marginBottom = '20px';  // <---- ADD MARGIN BOTTOM FOR SPACING
+    const table = document.createElement('table');
+    table.id = "tocTable-print";
+    table.style.borderCollapse = 'collapse';
+    table.style.width = '90%';
+    table.style.marginLeft = 'auto';
+    table.style.marginRight = 'auto';
+    table.style.marginBottom = '20px';  // <---- ADD MARGIN BOTTOM FOR SPACING
 
-  const tableBody = table.createTBody();
+    const tableBody = table.createTBody();
 
-  // 1. Main Company Name Row
-  if (data["Company Name"]) {
-    let row = tableBody.insertRow();
-    let cell1 = row.insertCell(0);
-    cell1.innerHTML = data["Company Name"];
-    cell1.classList.add("company-name");
-    cell1.style.border = '1px solid black';
-    cell1.style.textAlign = 'center';
-    cell1.colSpan = 2;
-  }
-
-  // 2. General Company Name
-  let generalCompanyNameRow = tableBody.insertRow();
-  let generalCompanyNameCell = generalCompanyNameRow.insertCell(0);
-  generalCompanyNameCell.innerHTML = "บริษัท ที.แมน ฟาร์มา จำกัด";
-  generalCompanyNameCell.classList.add("general-company-name");
-  generalCompanyNameCell.style.border = '1px solid black';
-  generalCompanyNameCell.style.textAlign = 'center';
-  generalCompanyNameCell.colSpan = 2;
-
-  // 3. Brand Name Row
-  if (data["Brand Name"]) {
-    let row = tableBody.insertRow();
-    let cell1 = row.insertCell(0);
-    cell1.innerHTML = "IYARA ABC";
-    cell1.classList.add("brand-name");
-    cell1.style.border = '1px solid black';
-    cell1.style.textAlign = 'center';
-    cell1.colSpan = 2;
-  }
-
-  // 4. Product Name Row
-  if (data["Product Name"]) {
-    let row = tableBody.insertRow();
-    let cell1 = row.insertCell(0);
-    cell1.innerHTML = data["Product Name"];
-    cell1.classList.add("product-name");
-    cell1.style.border = '1px solid black';
-    cell1.style.textAlign = 'center';
-    cell1.colSpan = 2;
-  }
-  // 4.1. Product Name Thai Row
-  if (data["Product Name TH"]) {
-    let row = tableBody.insertRow();
-    let cell1 = row.insertCell(0);
-    cell1.innerHTML = data["Product Name TH"];
-    cell1.classList.add("product-name-thai");
-    cell1.style.border = '1px solid black';
-    cell1.style.textAlign = 'center';
-    cell1.colSpan = 2;
-  }
-
-  // 5. GHI and Name Row - side by side
-  let ghiNameRow = tableBody.insertRow();
-  // GHI Cell (left)
-  let ghiCell = ghiNameRow.insertCell(0);
-  ghiCell.innerHTML = "Name " + "บริษัท ข.";
-  ghiCell.classList.add("ghi-name-cell");
-  ghiCell.style.border = '1px solid black';
-  ghiCell.style.textAlign = 'center';
-  // Name Cell (right)
-  let nameCell = ghiNameRow.insertCell(1);
-  nameCell.innerHTML = "GHI" + data["GHI"];
-  nameCell.classList.add("ghi-value-cell");
-  nameCell.style.border = '1px solid black';
-  nameCell.style.textAlign = 'center';
-
-
-  // 6. Barcode Row
-  if (data["Barcode"]) {
-    let barcodeRow = tableBody.insertRow();
-    let barcodeCell = barcodeRow.insertCell(0);
-
-    const barcodeSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    JsBarcode(barcodeSVG, data["Barcode"], {
-      format: "CODE128",
-      displayValue: true,
-      width: 1.5,
-      height: 60
-    });
-    barcodeCell.appendChild(barcodeSVG);
-    barcodeCell.colSpan = 2;
-    barcodeCell.style.border = '1px solid black';
-    barcodeCell.style.textAlign = 'center';
-
-
-    // 7. MFG, LOT, EXP Row - Below Barcode
-    let mfgLotExpRow = tableBody.insertRow();
-    let mfgLotExpCell = mfgLotExpRow.insertCell(0);
-    mfgLotExpCell.colSpan = 2;
-    mfgLotExpCell.classList.add("mfg-lot-exp-cell");
-    mfgLotExpCell.style.border = '1px solid black';
-    mfgLotExpCell.style.textAlign = 'center';
-
-
-    let mfgLotExpContent = "";
-    if (data["LOT"]) {
-      mfgLotExpContent += "LOT:<span class='value-span'>" + data["LOT"] + "</span>";
+    // 1. Main Company Name Row
+    if (data["Company Name"]) {
+      let row = tableBody.insertRow();
+      let cell1 = row.insertCell(0);
+      cell1.innerHTML = data["Company Name"];
+      cell1.classList.add("company-name");
+      cell1.style.border = '1px solid black';
+      cell1.style.textAlign = 'center';
+      cell1.colSpan = 2;
     }
-    if (data["MFG"]) {
-      mfgLotExpContent += "MFG:<span class='value-span'>" + data["MFG"] + "</span>";
+
+    // 2. General Company Name
+    let generalCompanyNameRow = tableBody.insertRow();
+    let generalCompanyNameCell = generalCompanyNameRow.insertCell(0);
+    generalCompanyNameCell.innerHTML = "บริษัท ที.แมน ฟาร์มา จำกัด";
+    generalCompanyNameCell.classList.add("general-company-name");
+    generalCompanyNameCell.style.border = '1px solid black';
+    generalCompanyNameCell.style.textAlign = 'center';
+    generalCompanyNameCell.colSpan = 2;
+
+    // 3. Brand Name Row
+    if (data["Brand Name"]) {
+      let row = tableBody.insertRow();
+      let cell1 = row.insertCell(0);
+      cell1.innerHTML = "IYARA ABC";
+      cell1.classList.add("brand-name");
+      cell1.style.border = '1px solid black';
+      cell1.style.textAlign = 'center';
+      cell1.colSpan = 2;
     }
-    if (data["EXP"]) {
-      mfgLotExpContent += "EXP:<span class='value-span'>" + data["EXP"] + "</span>";
+
+    // 4. Product Name Row
+    if (data["Product Name"]) {
+      let row = tableBody.insertRow();
+      let cell1 = row.insertCell(0);
+      cell1.innerHTML = data["Product Name"];
+      cell1.classList.add("product-name");
+      cell1.style.border = '1px solid black';
+      cell1.style.textAlign = 'center';
+      cell1.colSpan = 2;
     }
-    mfgLotExpCell.innerHTML = mfgLotExpContent;
+    // 4.1. Product Name Thai Row
+    if (data["Product Name TH"]) {
+      let row = tableBody.insertRow();
+      let cell1 = row.insertCell(0);
+      cell1.innerHTML = data["Product Name TH"];
+      cell1.classList.add("product-name-thai");
+      cell1.style.border = '1px solid black';
+      cell1.style.textAlign = 'center';
+      cell1.colSpan = 2;
+    }
+
+    // 5. GHI and Name Row - side by side
+    let ghiNameRow = tableBody.insertRow();
+    // GHI Cell (left)
+    let ghiCell = ghiNameRow.insertCell(0);
+    ghiCell.innerHTML = "Name " + "บริษัท ข.";
+    ghiCell.classList.add("ghi-name-cell");
+    ghiCell.style.border = '1px solid black';
+    ghiCell.style.textAlign = 'center';
+    // Name Cell (right)
+    let nameCell = ghiNameRow.insertCell(1);
+    nameCell.innerHTML = "GHI" + data["GHI"];
+    nameCell.classList.add("ghi-value-cell");
+    nameCell.style.border = '1px solid black';
+    nameCell.style.textAlign = 'center';
 
 
-    // 8. Unit and QTY Row - Below MFG/LOT/EXP
-    let unitQtyRow = tableBody.insertRow();
-    let unitQtyCell = unitQtyRow.insertCell(0);
-    unitQtyCell.colSpan = 2;
-    unitQtyCell.classList.add("unit-qty-cell");
-    unitQtyCell.style.border = '1px solid black';
-    unitQtyCell.style.textAlign = 'center';
+    // 6. Barcode Row
+    if (data["Barcode"]) {
+      let barcodeRow = tableBody.insertRow();
+      let barcodeCell = barcodeRow.insertCell(0);
+
+      const barcodeSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      JsBarcode(barcodeSVG, data["Barcode"], {
+        format: "CODE128",
+        displayValue: true,
+        width: 1.5,
+        height: 60
+      });
+      barcodeCell.appendChild(barcodeSVG);
+      barcodeCell.colSpan = 2;
+      barcodeCell.style.border = '1px solid black';
+      barcodeCell.style.textAlign = 'center';
 
 
-    let unitQtyContent = "";
-    if (data["บรรจุ"]) {
-      unitQtyContent += "บรรจุ : <span class='value-span'>" + data["บรรจุ"] + "</span>";
+      // 7. MFG, LOT, EXP Row - Below Barcode
+      let mfgLotExpRow = tableBody.insertRow();
+      let mfgLotExpCell = mfgLotExpRow.insertCell(0);
+      mfgLotExpCell.colSpan = 2;
+      mfgLotExpCell.classList.add("mfg-lot-exp-cell");
+      mfgLotExpCell.style.border = '1px solid black';
+      mfgLotExpCell.style.textAlign = 'center';
+
+
+      let mfgLotExpContent = "";
+      if (data["LOT"]) {
+        mfgLotExpContent += "LOT:<span class='value-span'>" + data["LOT"] + "</span>";
+      }
+      if (data["MFG"]) {
+        mfgLotExpContent += "MFG:<span class='value-span'>" + data["MFG"] + "</span>";
+      }
+      if (data["EXP"]) {
+        mfgLotExpContent += "EXP:<span class='value-span'>" + data["EXP"] + "</span>";
+      }
+      mfgLotExpCell.innerHTML = mfgLotExpContent;
+
+
+      // 8. Unit and QTY Row - Below MFG/LOT/EXP
+      let unitQtyRow = tableBody.insertRow();
+      let unitQtyCell = unitQtyRow.insertCell(0);
+      unitQtyCell.colSpan = 2;
+      unitQtyCell.classList.add("unit-qty-cell");
+      unitQtyCell.style.border = '1px solid black';
+      unitQtyCell.style.textAlign = 'center';
+
+
+      let unitQtyContent = "";
+      if (data["บรรจุ"]) {
+        unitQtyContent += "บรรจุ : <span class='value-span'>" + data["บรรจุ"] + "</span>";
+      }
+      if (data["QTY"]) {
+        unitQtyContent += "QTY: <span class='value-span'>" + "80.00" + "</span>";
+      }
+      unitQtyCell.innerHTML = unitQtyContent;
     }
-    if (data["QTY"]) {
-      unitQtyContent += "QTY: <span class='value-span'>" + "80.00" + "</span>";
-    }
-    unitQtyCell.innerHTML = unitQtyContent;
+
+
+    table.appendChild(tableBody);
+    container.appendChild(table);
+    console.log('Table element generated:', table);
+    console.log('Container element:', container);
   }
-
-
-  table.appendChild(tableBody);
-  container.appendChild(table);
-  console.log('Table element generated:', table);
-  console.log('Container element:', container);
 }
 
 
