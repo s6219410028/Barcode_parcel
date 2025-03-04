@@ -1,152 +1,255 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Parcel Label</title>
+    <link rel="stylesheet" href="/ParcelLabelProgram/CSS/styles.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Parcel Label</title>
-  <link rel="stylesheet" href="/CSS/styles.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
-</head>
+    <style>
+      @media print {
+        body * {
+          /* Apply to all elements inside body when printing */
+          visibility: hidden; /* Hide everything by default */
+        }
+        #tocTable,
+        #tocTable * {
+          /* Then, make the table and its contents visible */
+          visibility: visible;
+        }
+        #tocTable {
+          /* Position the table to the top-left of the printed page */
+          position: absolute;
+          left: 0;
+          top: 0;
+          margin: 0; /* Reset margins for print */
+          padding: 0; /* Reset padding for print */
+        }
+        /* Optional: Add some basic styling for the table on print */
+        #tocTable {
+          border-collapse: collapse; /* Single borders */
+          width: 100%; /* Take full width of printed area */
+          font-size: 12pt; /* Adjust font size for print if needed */
+        }
+        #tocTable th,
+        #tocTable td {
+          border: 1px solid black; /* Add borders for print */
+          padding: 5px;
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <h2>บริษัท เอ็กซ์เพรสเมด จำกัด</h2>
+    <div class="input-container" id="companyAForm">
+      <label for="productNameEngA">Product Name (Eng):</label>
+      <select
+        id="productNameEngA"
+        onchange="updateDropdown('companyA', this.value)"
+      >
+        <option value="">Select Product (Eng)</option>
+        <option value="product1A">Product A (Eng)</option>
+        <option value="product2A">Product B (Eng)</option>
+        <option value="product3A">Product C (Eng)</option>
+      </select>
 
-  <h2>บริษัท เอ็กซ์เพรสเมด จำกัด</h2>
-  <div class="input-container" id="companyAForm">
-    <label for="productNameEngA">Product Name (Eng):</label>
-    <select id="productNameEngA" onchange="updateDropdown('companyA', this.value)">
-      <option value="">Select Product (Eng)</option>
-      <option value="product1A">Product A (Eng)</option>
-      <option value="product2A">Product B (Eng)</option>
-      <option value="product3A">Product C (Eng)</option>
-    </select>
+      <label for="productNameThA">Product Name (Thai):</label>
+      <select id="productNameThA">
+        <option value="">Select Product (Thai)</option>
+        <option value="Product A (Thai)">Product A (Thai)</option>
+        <option value="Product B (Thai)">Product B (Thai)</option>
+        <option value="Product C (Thai)">Product C (Thai)</option>
+      </select>
 
-    <label for="productNameThA">Product Name (Thai):</label>
-    <select id="productNameThA">
-      <option value="">Select Product (Thai)</option>
-      <option value="Product A (Thai)">Product A (Thai)</option>
-      <option value="Product B (Thai)">Product B (Thai)</option>
-      <option value="Product C (Thai)">Product C (Thai)</option>
-    </select>
+      <label for="barcodeA">Barcode:</label>
+      <select id="barcodeA">
+        <option value="">Select Barcode</option>
+        <option value="1234567890">1234567890</option>
+        <option value="9876543210">9876543210</option>
+        <option value="111222333444">111222333444</option>
+      </select>
 
-    <label for="barcodeA">Barcode:</label>
-    <select id="barcodeA">
-      <option value="">Select Barcode</option>
-      <option value="1234567890">1234567890</option>
-      <option value="9876543210">9876543210</option>
-      <option value="111222333444">111222333444</option>
-    </select>
+      <label for="mfgA">MFG:</label>
+      <select id="mfgA">
+        <option value="">Select MFG</option>
+        <option value="16-01-25">16-01-25</option>
+        <option value="17-02-26">17-02-26</option>
+        <option value="18-03-27">18-03-27</option>
+      </select>
 
-    <label for="mfgA">MFG:</label>
-    <select id="mfgA">
-      <option value="">Select MFG</option>
-      <option value="16-01-25">16-01-25</option>
-      <option value="17-02-26">17-02-26</option>
-      <option value="18-03-27">18-03-27</option>
-    </select>
+      <label for="lotA">LOT:</label>
+      <select id="lotA">
+        <option value="">Select LOT</option>
+        <option value="2066803">2066803</option>
+        <option value="2066804">2066804</option>
+        <option value="2066805">2066805</option>
+      </select>
 
-    <label for="lotA">LOT:</label>
-    <select id="lotA">
-      <option value="">Select LOT</option>
-      <option value="2066803">2066803</option>
-      <option value="2066804">2066804</option>
-      <option value="2066805">2066805</option>
-    </select>
+      <label for="expA">EXP:</label>
+      <select id="expA">
+        <option value="">Select EXP</option>
+        <option value="22-02-27">22-02-27</option>
+        <option value="23-03-28">23-03-28</option>
+        <option value="24-04-29">24-04-29</option>
+      </select>
 
-    <label for="expA">EXP:</label>
-    <select id="expA">
-      <option value="">Select EXP</option>
-      <option value="22-02-27">22-02-27</option>
-      <option value="23-03-28">23-03-28</option>
-      <option value="24-04-29">24-04-29</option>
-    </select>
+      <label for="unitA">UNIT:</label>
+      <select id="unitA">
+        <option value="">Select UNIT</option>
+        <option value="24x6x60cc">24x6x60cc</option>
+        <option value="30x8x70cc">30x8x70cc</option>
+        <option value="36x10x80cc">36x10x80cc</option>
+      </select>
 
-    <label for="unitA">UNIT:</label>
-    <select id="unitA">
-      <option value="">Select UNIT</option>
-      <option value="24x6x60cc">24x6x60cc</option>
-      <option value="30x8x70cc">30x8x70cc</option>
-      <option value="36x10x80cc">36x10x80cc</option>
-    </select>
+      <button onclick="generateTable('companyA')">
+        Generate Table (Company A)
+      </button>
+    </div>
 
-    <button onclick="generateTable('companyA')">Generate Table (Company A)</button>
-  </div>
+    <h2>Company B Label</h2>
+    <div class="input-container" id="companyBForm">
+      <label for="productNameB">Product Name (Eng):</label>
+      <select
+        id="productNameB"
+        onchange="updateDropdown('companyB', this.value)"
+      >
+        <option value="">Select Product (Eng)</option>
+        <option value="product1B">Iyara AEC Syrup-Red 7-11</option>
+        <option value="product2B">Product B (Eng)</option>
+        <option value="product3B">Product C (Eng)</option>
+      </select>
 
-  <h2>Company B Label</h2>
-  <div class="input-container" id="companyBForm">
-    <label for="productNameB">Product Name (Eng):</label>
-    <select id="productNameB" onchange="updateDropdown('companyB', this.value)">
-      <option value="">Select Product (Eng)</option>
-      <option value="product1B">Iyara AEC Syrup-Red 7-11</option>
-      <option value="product2B">Product B (Eng)</option>
-      <option value="product3B">Product C (Eng)</option>
-    </select>
+      <label for="productNameThB">Product Name (Thai):</label>
+      <select id="productNameThB">
+        <option value="">Select Product (Thai)</option>
+        <option value="มะแว้ง-เออีซี ไอยราแดง 7-11">
+          มะแว้ง-เออีซี ไอยราแดง 7-11
+        </option>
+        <option value="Product B (Thai)">Product B (Thai)</option>
+        <option value="Product C (Thai)">Product C (Thai)</option>
+      </select>
 
-    <label for="productNameThB">Product Name (Thai):</label>
-    <select id="productNameThB">
-      <option value="">Select Product (Thai)</option>
-      <option value="มะแว้ง-เออีซี ไอยราแดง 7-11">มะแว้ง-เออีซี ไอยราแดง 7-11</option>
-      <option value="Product B (Thai)">Product B (Thai)</option>
-      <option value="Product C (Thai)">Product C (Thai)</option>
-    </select>
+      <label for="barcodeB">Barcode:</label>
+      <select id="barcodeB">
+        <option value="">Select Barcode</option>
+        <option value="8856513009380">8856513009380</option>
+        <option value="9876543210">9876543210</option>
+        <option value="111222333444">111222333444</option>
+      </select>
 
-    <label for="barcodeB">Barcode:</label>
-    <select id="barcodeB">
-      <option value="">Select Barcode</option>
-      <option value="8856513009380">8856513009380</option>
-      <option value="9876543210">9876543210</option>
-      <option value="111222333444">111222333444</option>
-    </select>
+      <label for="mfgB">MFG:</label>
+      <select id="mfgB">
+        <option value="">Select MFG</option>
+        <option value="16-01-25">16-01-25</option>
+        <option value="17-02-26">17-02-26</option>
+        <option value="18-03-27">18-03-27</option>
+      </select>
 
-    <label for="mfgB">MFG:</label>
-    <select id="mfgB">
-      <option value="">Select MFG</option>
-      <option value="16-01-25">16-01-25</option>
-      <option value="17-02-26">17-02-26</option>
-      <option value="18-03-27">18-03-27</option>
-    </select>
+      <label for="lotB">LOT:</label>
+      <select id="lotB">
+        <option value="">Select LOT</option>
+        <option value="2066803">2066803</option>
+        <option value="2066804">2066804</option>
+        <option value="2066805">2066805</option>
+      </select>
 
-    <label for="lotB">LOT:</label>
-    <select id="lotB">
-      <option value="">Select LOT</option>
-      <option value="2066803">2066803</option>
-      <option value="2066804">2066804</option>
-      <option value="2066805">2066805</option>
-    </select>
+      <label for="expB">EXP:</label>
+      <select id="expB">
+        <option value="">Select EXP</option>
+        <option value="22-02-27">22-02-27</option>
+        <option value="23-03-28">23-03-28</option>
+        <option value="24-04-29">24-04-29</option>
+      </select>
 
-    <label for="expB">EXP:</label>
-    <select id="expB">
-      <option value="">Select EXP</option>
-      <option value="22-02-27">22-02-27</option>
-      <option value="23-03-28">23-03-28</option>
-      <option value="24-04-29">24-04-29</option>
-    </select>
+      <label for="unitB">UNIT:</label>
+      <select id="unitB">
+        <option value="">Select UNIT</option>
+        <option value="24x6x60cc">24x6x60cc</option>
+        <option value="30x8x70cc">30x8x70cc</option>
+        <option value="36x10x80cc">36x10x80cc</option>
+      </select>
 
-    <label for="unitB">UNIT:</label>
-    <select id="unitB">
-      <option value="">Select UNIT</option>
-      <option value="24x6x60cc">24x6x60cc</option>
-      <option value="30x8x70cc">30x8x70cc</option>
-      <option value="36x10x80cc">36x10x80cc</option>
-    </select>
+      <button onclick="generateTable('companyB')">
+        Generate Table (Company B)
+      </button>
+    </div>
 
-    <button onclick="generateTable('companyB')">Generate Table (Company B)</button>
-  </div>
+    <table id="tocTable">
+      <thead>
+        <tr>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-  <table id="tocTable">
-    <thead>
-      <tr>
-        <th></th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
+    <button onclick="printTable()">Print Label</button>
 
-  <script src="/JS/script.js"></script>
-
-</body>
-
+    <script>
+      const productData = {
+        companyA: {
+          product1A: {
+            productNameThA: "Product A (Thai)",
+            barcodeA: "1234567890",
+            mfgA: "16-01-25",
+            lotA: "2066803",
+            expA: "22-02-27",
+            unitA: "24x6x60cc",
+          },
+          product2A: {
+            productNameThA: "Product B (Thai)",
+            barcodeA: "9876543210",
+            mfgA: "17-02-26",
+            lotA: "2066804",
+            expA: "23-03-28",
+            unitA: "30x8x70cc",
+          },
+          product3A: {
+            productNameThA: "Product C (Thai)",
+            barcodeA: "111222333444",
+            mfgA: "18-03-27",
+            lotA: "2066805",
+            expA: "24-04-29",
+            unitA: "36x10x80cc",
+          },
+        },
+        companyB: {
+          product1B: {
+            productNameThB: "มะแว้ง-เออีซี ไอยราแดง 7-11",
+            barcodeB: "8856513009380",
+            mfgB: "16-01-25",
+            lotB: "2066803",
+            expB: "22-02-27",
+            unitB: "24x6x60cc",
+          },
+          product2B: {
+            productNameThB: "Product B (Thai)",
+            barcodeB: "9876543210",
+            mfgB: "17-02-26",
+            lotB: "2066804",
+            expB: "23-03-28",
+            unitB: "30x8x70cc",
+          },
+          product3B: {
+            productNameThB: "Product C (Thai)",
+            barcodeB: "111222333444",
+            mfgB: "18-03-27",
+            lotB: "2066805",
+            expB: "24-04-29",
+            unitB: "36x10x80cc",
+          },
+        },
+      };
+    </script>
+    <script src="/ParcelLabelProgram/JS/script.js"></script>
+  </body>
 </html>
