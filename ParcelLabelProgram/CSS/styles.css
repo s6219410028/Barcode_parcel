@@ -113,3 +113,116 @@ body {
     display: none;
   }
 }
+
+/* --- Company A Specific Styles (Image-Like Format) --- */
+
+.company-name-a-main {
+  font-size: 24px; /* Adjust as needed to match image */
+  font-weight: bold; /* Make it bolder */
+  /* Add other styling for main company name if needed */
+}
+
+.general-company-name-a {
+  font-size: 12px; /* Make it smaller */
+  color: #888; /* Make it lighter gray color, less prominent */
+  /* Add other styling for general company name if needed */
+}
+
+.product-code-row-a td {
+  /* Apply styles to the cell WITHIN Product Code row */
+  font-size: 16px; /* Adjust as needed */
+  border-top: 1px solid black; /* Keep top border for Product Code row */
+  text-align: left; /* Align text to the left within Product Code cell */
+  padding-left: 5px; /* Add left padding */
+}
+
+.product-value-a {
+  font-weight: normal; /* Product name itself - you can style it differently from "PRODUCT CODE :" if needed */
+}
+
+.mfg-lot-unit-cell-a {
+  font-size: 14px; /* Adjust font size for MFG, LOT, UNIT lines */
+  line-height: 1.4; /* Adjust line height for spacing between MFG, LOT, UNIT lines */
+  /* Add other styling for MFG/LOT/UNIT cell if needed */
+}
+
+.mfg-lot-cell-a {
+  font-size: 14px;
+  line-height: 1.2;
+  display: flex;
+  justify-content: space-between; /* CORRECT alignment - SPACE-BETWEEN - NOW INCLUDED */
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top: 1px solid black;
+  border-bottom: none; /* Remove bottom border */
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  text-align: left; /* Add text-align: left; to ensure text inside flex items align left */
+}
+
+.unit-cell-a {
+  font-size: 14px;
+  line-height: 1.2;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top: none; /* Remove top border */
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  text-align: left; /* Add text-align: left; for consistent text alignment */
+}
+
+/* --- Border Removal Styles - Consolidated and Corrected Selectors --- */
+.product-name-eng-row-a td,
+.product-name-thai-row-a td,
+.barcode-row-a td,
+.mfg-lot-cell-a,
+.unit-cell-a {
+  border-bottom: none; /* Remove bottom border for these rows/cells */
+}
+
+.product-code-row-a td, /* Keep top border for Product Code row (cell within) */
+.mfg-lot-cell-a,       /* Keep top border for MFG LOT row */
+.unit-cell-a {
+  /* Keep top border for UNIT row  (will act as bottom border of the combined section) */
+  border-top: 1px solid black;
+}
+
+/* --- Existing CSS Styles (Keep these - do not remove) --- */
+/* You should already have these or similar styles - DO NOT REMOVE */
+.company-name {
+  font-size: 18px; /* Example - adjust if your original style is different */
+  font-weight: bold;
+  /* ... other styles ... */
+}
+
+.general-company-name {
+  font-size: 14px; /* Example - adjust if your original style is different */
+  /* ... other styles ... */
+}
+
+.product-name {
+  font-size: 16px; /* Example - adjust if your original style is different */
+  font-weight: bold;
+  /* ... other styles ... */
+}
+
+.product-name-thai {
+  font-size: 14px; /* Example - adjust if your original style is different */
+  /* ... other styles ... */
+}
+
+.ghi-name-cell,
+.ghi-value-cell {
+  font-size: 14px; /* Example - adjust if your original style is different */
+  /* ... other styles ... */
+}
+
+.mfg-lot-exp-cell,
+.unit-qty-cell {
+  font-size: 14px; /* Example - adjust if your original style is different */
+  /* ... other styles ... */
+}
+#tocTable-print td {
+  padding: 5px; /* Example - adjust if your original style is different */
+}

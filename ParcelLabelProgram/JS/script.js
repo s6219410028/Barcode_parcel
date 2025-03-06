@@ -6,12 +6,15 @@ function updateDropdown(company, productNameEngValue) {
     const data = companyData[productNameEngValue];
     console.log('Data found:', data);
 
-    if (company === 'companyB') {
+    if (company === 'companyA') {  // <---- ADD THIS CONDITION
+      console.log('Thai Product Name for Company A from data:', data.productNameThA);
+      document.getElementById('productNameThA').value = data.productNameThA || ''; // Auto-fill for Company A
+    } else if (company === 'companyB') { // Keep the Company B condition as it is
       console.log('Thai Product Name from data:', data.productNameThB);
       document.getElementById('productNameThB').value = data.productNameThB || '';
     }
 
-    // Update other dropdowns (Barcode, MFG, LOT, EXP, UNIT) similarly for both companies if needed in the future
+    // Update other dropdowns (Barcode, MFG, LOT, EXP, UNIT) - This part is already general and works for both companies
     document.getElementById('barcode' + company.slice(-1).toUpperCase()).value = data['barcode' + company.slice(-1).toUpperCase()] || '';
     document.getElementById('mfg' + company.slice(-1).toUpperCase()).value = data['mfg' + company.slice(-1).toUpperCase()] || '';
     document.getElementById('lot' + company.slice(-1).toUpperCase()).value = data['lot' + company.slice(-1).toUpperCase()] || '';
@@ -21,7 +24,9 @@ function updateDropdown(company, productNameEngValue) {
 
   } else {
     console.log('No data found for product or company.');
-    if (company === 'companyB') {
+    if (company === 'companyA') { // <---- ADD THIS CONDITION for clearing Company A too
+      document.getElementById('productNameThA').value = ''; // Clear Thai Product Name for Company A
+    } else if (company === 'companyB') { // Keep Company B clear condition
       document.getElementById('productNameThB').value = '';
     }
     document.getElementById('barcode' + company.slice(-1).toUpperCase()).value = '';
@@ -38,14 +43,14 @@ function generateTableForPrint(company, container) {
   let barcode = "";
 
   if (company === 'companyA') {
-    // --- COMPANY A: IMAGE-LIKE SIMPLIFIED TABLE FORMAT ---
+    // --- COMPANY A: IMAGE-LIKE FORMAT - TOP ROW "PRODUCT CODE:" FOR MANUAL INPUT ---
     data["Company Name"] = document.getElementById("companyNameA").value;
-    data["Product Name"] = document.getElementById("productNameEngA").value;
+    data["Product Name"] = document.getElementById("productNameEngA").value; // Product_Name_ENG (still needed for Product_Name_ENG row)
+    data["Product Name TH"] = document.getElementById("productNameThA").value;
     barcode = document.getElementById("barcodeA").value;
     data["Barcode"] = barcode;
     data["LOT"] = document.getElementById("lotA").value;
     data["MFG"] = document.getElementById("mfgA").value;
-    data["EXP"] = document.getElementById("expA").value;
     data["บรรจุ"] = document.getElementById("unitA").value;
 
 
@@ -53,46 +58,52 @@ function generateTableForPrint(company, container) {
     table.id = "tocTable-print";
     table.style.borderCollapse = 'collapse';
     table.style.width = '90%';
+    table.style.marginTop = '20px';
     table.style.marginLeft = 'auto';
     table.style.marginRight = 'auto';
     table.style.marginBottom = '20px';
 
     const tableBody = table.createTBody();
 
-    // 1. Main Company Name Row (LARGE FONT, TOP)
-    if (data["Company Name"]) {
+    // --- (No Company Name Row for Company A - as requested) ---
+
+
+    // 1. Product Code Row - TOP ROW NOW JUST "PRODUCT CODE:" - FOR MANUAL INPUT
+    let row = tableBody.insertRow();
+    let cell1 = row.insertCell(0);
+    cell1.innerHTML = "PRODUCT CODE :"; // <---- CHANGED: Only display "PRODUCT CODE :" text
+    cell1.classList.add("product-code-row-a");
+    cell1.style.border = '1px solid black';
+    cell1.style.textAlign = 'left';
+    cell1.style.paddingLeft = '5px';
+    cell1.colSpan = 2;
+
+
+    // 2. Product_Name_ENG Row - SECOND ROW - Product Name ENG is still displayed here
+    if (data["Product Name"]) { // Re-using same condition as Product Code row - Product_Name_ENG
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = data["Company Name"];
-      cell1.classList.add("company-name-a-main"); // NEW CLASS for Company A Main Name
+      cell1.innerHTML = "Product_Name_Eng : " + "<span class='product-name-eng-a'>" + data["Product Name"] + "</span>"; // Product_Name_ENG is displayed in this row
+      cell1.classList.add("product-name-eng-row-a");
       cell1.style.border = '1px solid black';
       cell1.style.textAlign = 'center';
       cell1.colSpan = 2;
     }
 
-    // 2. General Company Name (LESS PROMINENT)
-    let generalCompanyNameRow = tableBody.insertRow();
-    let generalCompanyNameCell = generalCompanyNameRow.insertCell(0);
-    generalCompanyNameCell.innerHTML = "บริษัท ที.แมน ฟาร์มา จำกัด";
-    generalCompanyNameCell.classList.add("general-company-name-a"); // NEW CLASS for Company A General Name
-    generalCompanyNameCell.style.border = '1px solid black';
-    generalCompanyNameCell.style.textAlign = 'center';
-    generalCompanyNameCell.colSpan = 2;
 
-    // 4. Product Name Row ("PRODUCT CODE:" INLINE)
-    if (data["Product Name"]) {
+    // 3. Product Name Thai Row
+    if (data["Product Name TH"]) {
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = "PRODUCT CODE : <span class='product-value-a'>" + data["Product Name"] + "</span>"; // SPAN for Product Value
-      cell1.classList.add("product-code-row-a"); // NEW CLASS for Product Code Row
+      cell1.innerHTML = "Product_Name_Th : " + "<span class='product-name-thai-a'>" + data["Product Name TH"] + "</span>";
+      cell1.classList.add("product-name-thai-row-a");
       cell1.style.border = '1px solid black';
-      cell1.style.textAlign = 'left'; // Left align Product Code for better image match
-      cell1.style.paddingLeft = '5px'; // Add some padding to the left
+      cell1.style.textAlign = 'center';
       cell1.colSpan = 2;
     }
 
 
-    // 6. Barcode Row (BELOW PRODUCT CODE)
+    // 4. Barcode Row
     if (data["Barcode"]) {
       let barcodeRow = tableBody.insertRow();
       let barcodeCell = barcodeRow.insertCell(0);
@@ -109,29 +120,40 @@ function generateTableForPrint(company, container) {
       barcodeCell.colSpan = 2;
       barcodeCell.style.border = '1px solid black';
       barcodeCell.style.textAlign = 'center';
+    }
 
+    // 5. MFG LOT Row
+    
+    if (data["MFG"] || data["LOT"]) {
+      let mfgLotRow = tableBody.insertRow();
+      let mfgLotCell = mfgLotRow.insertCell(0);
+      mfgLotCell.colSpan = 2;
+      mfgLotCell.classList.add("mfg-lot-cell-a");
+      mfgLotCell.style.border = '1px solid black';
+      // mfgLotCell.style.textAlign = 'center';
+      // mfgLotCell.style.paddingLeft = '10px';
 
-      // 7. MFG, LOT, EXP Row - Below Barcode (VERTICAL LAYOUT)
-      let mfgLotExpRow = tableBody.insertRow();
-      let mfgLotExpCell = mfgLotExpRow.insertCell(0);
-      mfgLotExpCell.colSpan = 2;
-      mfgLotExpCell.classList.add("mfg-lot-unit-cell-a"); // NEW CLASS for MFG/LOT/UNIT Cell
-      mfgLotExpCell.style.border = '1px solid black';
-      mfgLotExpCell.style.textAlign = 'left'; // Left align MFG/LOT/UNIT
-      mfgLotExpCell.style.paddingLeft = '5px';
-
-
-      let mfgLotExpContent = "";
-      if (data["MFG"]) { // MFG ON TOP LINE
-        mfgLotExpContent += "MFG:<span class='value-span'>" + data["MFG"] + "</span><br>"; // <br> for line break
+      let mfgLotContent = "";
+      if (data["MFG"]) {
+        mfgLotContent += "MFG:<span class='value-span'>" + data["MFG"] + "</span>&nbsp;&nbsp;";
       }
-      if (data["LOT"]) { // LOT ON MIDDLE LINE
-        mfgLotExpContent += "LOT:<span class='value-span'>" + data["LOT"] + "</span><br>"; // <br> for line break
+      if (data["LOT"]) {
+        mfgLotContent += "LOT:<span class='value-span'>" + data["LOT"] + "</span>";
       }
-      if (data["บรรจุ"]) { // UNIT (บรรจุ) ON BOTTOM LINE
-        mfgLotExpContent += "UNIT:<span class='value-span'>" + data["บรรจุ"] + "</span>"; // Changed to UNIT for consistency
-      }
-      mfgLotExpCell.innerHTML = mfgLotExpContent;
+      mfgLotCell.innerHTML = mfgLotContent;
+    }
+
+
+    // 6. UNIT Row
+    if (data["บรรจุ"]) {
+      let unitRow = tableBody.insertRow();
+      let unitCell = unitRow.insertCell(0);
+      unitCell.colSpan = 2;
+      unitCell.classList.add("unit-cell-a");
+      unitCell.style.border = '1px solid black';
+      unitCell.style.textAlign = 'left';
+      unitCell.style.paddingLeft = '5px';
+      unitCell.innerHTML = "UNIT:<span class='value-span'>" + data["บรรจุ"] + "</span>";
     }
 
 
