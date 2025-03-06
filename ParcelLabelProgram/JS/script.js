@@ -68,7 +68,7 @@ function generateTableForPrint(company, container) {
     // --- (No Company Name Row for Company A - as requested) ---
 
 
-    // 1. Product Code Row - TOP ROW NOW JUST "PRODUCT CODE:" - FOR MANUAL INPUT
+     // 1. Product Code Row - TOP ROW NOW JUST "PRODUCT CODE:" - FOR MANUAL INPUT
     let row = tableBody.insertRow();
     let cell1 = row.insertCell(0);
     cell1.innerHTML = "PRODUCT CODE :"; // <---- CHANGED: Only display "PRODUCT CODE :" text
@@ -479,3 +479,4 @@ $(document).ready(function () {
     sortField: 'text'
   });
 });
+
