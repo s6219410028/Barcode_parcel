@@ -1,6 +1,7 @@
-body {
-  font-family: sans-serif;
-}
+/* body {
+  font-family: "Sarabun", sans-serif;
+
+} */
 
 .input-container {
   width: 400px;
@@ -30,7 +31,7 @@ body {
 
 table {
   border-collapse: collapse; /* Ensures a clean outer border */
-  border: 2px solid black; /* Outer border */
+  /* Outer border */
   width: 100%;
 }
 
@@ -38,6 +39,60 @@ th,
 td {
   border: none; /* Removes internal borders */
   padding: 5px; /* Adds spacing */
+  text-align: left;
+}
+
+/* --- Company A Specific Styles (Image-Like Format) --- */
+
+.company-name-a-main {
+  font-size: 24px; /* Adjust as needed to match image */
+  font-weight: bold; /* Make it bolder */
+}
+
+.general-company-name-a {
+  font-size: 12px; /* Make it smaller */
+  color: #888; /* Make it lighter gray color, less prominent */
+}
+
+.product-code-row-a td {
+  font-size: 16px; /* Adjust as needed */
+  border-top: 1px solid black; /* Keep top border for Product Code row */
+  text-align: left;
+  padding-left: 5px;
+}
+
+.product-value-a {
+  font-weight: normal; /* Product name itself - styled differently from "PRODUCT CODE :" */
+}
+
+.mfg-lot-unit-cell-a {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.mfg-lot-cell-a {
+  font-size: 14px;
+  line-height: 1.2;
+  display: flex;
+  justify-content: space-between; /* Correct alignment */
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top: 1px solid black;
+  border-bottom: none;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
+  text-align: left;
+}
+
+.unit-cell-a {
+  font-size: 14px;
+  line-height: 1.2;
+  padding-left: 10px;
+  padding-right: 10px;
+  border-top: none;
+  border-bottom: 1px solid black;
+  border-left: 1px solid black;
+  border-right: 1px solid black;
   text-align: left;
 }
 
@@ -127,80 +182,6 @@ td {
   }
 }
 
-/* --- Company A Specific Styles (Image-Like Format) --- */
-
-.company-name-a-main {
-  font-size: 24px; /* Adjust as needed to match image */
-  font-weight: bold; /* Make it bolder */
-}
-
-.general-company-name-a {
-  font-size: 12px; /* Make it smaller */
-  color: #888; /* Make it lighter gray color, less prominent */
-}
-
-.product-code-row-a td {
-  font-size: 16px; /* Adjust as needed */
-  border-top: 1px solid black; /* Keep top border for Product Code row */
-  text-align: left;
-  padding-left: 5px;
-}
-
-.product-value-a {
-  font-weight: normal; /* Product name itself - styled differently from "PRODUCT CODE :" */
-}
-
-.mfg-lot-unit-cell-a {
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.mfg-lot-cell-a {
-  font-size: 14px;
-  line-height: 1.2;
-  display: flex;
-  justify-content: space-between; /* Correct alignment */
-  padding-left: 10px;
-  padding-right: 10px;
-  border-top: 1px solid black;
-  border-bottom: none;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-  text-align: left;
-}
-
-.unit-cell-a {
-  font-size: 14px;
-  line-height: 1.2;
-  padding-left: 10px;
-  padding-right: 10px;
-  border-top: none;
-  border-bottom: 1px solid black;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-  text-align: left;
-}
-
-/* --- Border Removal Styles - Fix for Your Request --- */
-@media print {
-  /* Remove all cell borders except PRODUCT CODE and UNIT row */
-  #print-container td,
-  #print-container th {
-    border: none !important; /* Remove all borders first */
-  }
-
-  /* Keep only PRODUCT CODE row's top and bottom borders */
-  .product-code-row-a td {
-    border-top: 1px solid black !important;
-    border-bottom: 1px solid black !important;
-  }
-
-  /* Keep only UNIT row's top border */
-  .unit-cell-a {
-    border-top: 1px solid black !important;
-  }
-}
-
 /* --- Existing CSS Styles (Keep these - do not remove) --- */
 .company-name {
   font-size: 18px;
@@ -232,4 +213,8 @@ td {
 
 #tocTable-print td {
   padding: 5px;
+}
+
+.mfg-value {
+  margin-right: 20px; /* Adjust space between MFG and LOT */
 }

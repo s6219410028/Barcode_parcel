@@ -1,3 +1,15 @@
+window.onload = function () {
+  document.querySelectorAll("p, td, span, div").forEach(element => {
+    if (/[ก-๙]/.test(element.textContent)) {
+      element.style.fontFamily = "Sarabun, CordiaUPC, sans-serif"; // Thai font
+    } else {
+      element.style.fontFamily = "Tahoma, Arial, sans-serif"; // English font
+    }
+  });
+};
+
+
+
 function updateDropdown(company, productNameEngValue) {
   console.log('updateDropdown called - Company:', company, 'Product (Eng) Value:', productNameEngValue);
 
@@ -62,46 +74,58 @@ function generateTableForPrint(company, container) {
     table.style.marginLeft = 'auto';
     table.style.marginRight = 'auto';
     table.style.marginBottom = '20px';
+    table.style.border = '0px solid black';
 
     const tableBody = table.createTBody();
 
     // --- (No Company Name Row for Company A - as requested) ---
 
 
-     // 1. Product Code Row - TOP ROW NOW JUST "PRODUCT CODE:" - FOR MANUAL INPUT
+    // 1. Product Code Row - TOP ROW NOW JUST "PRODUCT CODE:" - FOR MANUAL INPUT
     let row = tableBody.insertRow();
     let cell1 = row.insertCell(0);
-    cell1.innerHTML = "PRODUCT CODE :"; // <---- CHANGED: Only display "PRODUCT CODE :" text
+    cell1.innerHTML = "<h2> PRODUCT CODE : </h2>"; // H2 for PRODUCT CODE
     cell1.classList.add("product-code-row-a");
     cell1.style.border = '1px solid black';
     cell1.style.textAlign = 'left';
-    cell1.style.paddingLeft = '5px';
+    cell1.style.paddingLeft = '100px';
+    cell1.style.paddingTop = '20px';
+    cell1.style.paddingBottom = '0px';
+
     cell1.colSpan = 2;
 
-
-    // 2. Product_Name_ENG Row - SECOND ROW - Product Name ENG is still displayed here
-    if (data["Product Name"]) { // Re-using same condition as Product Code row - Product_Name_ENG
+    // 2. Product_Name_ENG Row - SECOND ROW
+    if (data["Product Name"]) {
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = "Product_Name_Eng : " + "<span class='product-name-eng-a'>" + data["Product Name"] + "</span>"; // Product_Name_ENG is displayed in this row
+      cell1.innerHTML = `<span style="font-size: 1.25rem; font-weight: bold;">Product_Name_Eng:</span>
+      <span class='product-name-eng-a'>${data["Product Name"]}</span>`;
       cell1.classList.add("product-name-eng-row-a");
-      cell1.style.border = '1px solid black';
-      cell1.style.textAlign = 'center';
+      cell1.style.textAlign = 'left';
+      cell1.style.paddingLeft = '100px';
+      cell1.style.borderLeft = '1px solid black';
+      cell1.style.borderRight = '1px solid black';
       cell1.colSpan = 2;
-    }
+      cell1.style.margin = '0px';
+      padding = '0px';
 
+    }
 
     // 3. Product Name Thai Row
     if (data["Product Name TH"]) {
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = "Product_Name_Th : " + "<span class='product-name-thai-a'>" + data["Product Name TH"] + "</span>";
+      cell1.innerHTML = `<span style="font-size: 1.25rem; font-weight: bold;">Product_Name_Th : </span>
+      <span class='product-name-thai-a'>${data["Product Name TH"]}</span>`;
       cell1.classList.add("product-name-thai-row-a");
-      cell1.style.border = '1px solid black';
-      cell1.style.textAlign = 'center';
+      cell1.style.textAlign = 'left';
+      cell1.style.paddingLeft = '100px';
+      cell1.style.borderLeft = '1px solid black';
+      cell1.style.borderRight = '1px solid black';
       cell1.colSpan = 2;
+      cell1.style.margin = '0px';
+      padding = '0px';
     }
-
 
     // 4. Barcode Row
     if (data["Barcode"]) {
@@ -112,37 +136,36 @@ function generateTableForPrint(company, container) {
       JsBarcode(barcodeSVG, data["Barcode"], {
         format: "CODE128",
         displayValue: true,
-        displayValue: true,
         width: 1.5,
         height: 60
       });
+
       barcodeCell.appendChild(barcodeSVG);
       barcodeCell.colSpan = 2;
-      barcodeCell.style.border = '1px solid black';
       barcodeCell.style.textAlign = 'center';
+      barcodeCell.style.borderBottom = 'collapse';
+      barcodeCell.style.borderLeft = '1px solid black';
+      barcodeCell.style.borderRight = '1px solid black';
     }
 
     // 5. MFG LOT Row
-    
     if (data["MFG"] || data["LOT"]) {
       let mfgLotRow = tableBody.insertRow();
       let mfgLotCell = mfgLotRow.insertCell(0);
       mfgLotCell.colSpan = 2;
       mfgLotCell.classList.add("mfg-lot-cell-a");
-      mfgLotCell.style.border = '1px solid black';
-      // mfgLotCell.style.textAlign = 'center';
-      // mfgLotCell.style.paddingLeft = '10px';
+      mfgLotCell.style.borderLeft = "1px solid black";
+      mfgLotCell.style.borderRight = "1px solid black";
+      mfgLotCell.style.textAlign = "left";
+      mfgLotCell.style.paddingLeft = "100px";
 
-      let mfgLotContent = "";
-      if (data["MFG"]) {
-        mfgLotContent += "MFG:<span class='value-span'>" + data["MFG"] + "</span>&nbsp;&nbsp;";
-      }
-      if (data["LOT"]) {
-        mfgLotContent += "LOT:<span class='value-span'>" + data["LOT"] + "</span>";
-      }
-      mfgLotCell.innerHTML = mfgLotContent;
+      mfgLotCell.innerHTML = `
+    <div style="display: flex; justify-content: space-between; width: 80%;">
+      <span class="mfg-value" style="font-size: 1.25rem; flex: 1; text-align: left;"><b>MFG:</b> <span class="value-span">${data["MFG"] || ""}</span></span>
+      <span class="lot-value" style="font-size: 1.25rem; text-align: right;"><b>LOT:</b> <span class="value-span">${data["LOT"] || ""}</span></span>
+    </div>
+  `;
     }
-
 
     // 6. UNIT Row
     if (data["บรรจุ"]) {
@@ -152,8 +175,15 @@ function generateTableForPrint(company, container) {
       unitCell.classList.add("unit-cell-a");
       unitCell.style.border = '1px solid black';
       unitCell.style.textAlign = 'left';
-      unitCell.style.paddingLeft = '5px';
-      unitCell.innerHTML = "UNIT:<span class='value-span'>" + data["บรรจุ"] + "</span>";
+      unitCell.style.paddingLeft = '100px';
+
+      unitCell.innerHTML = `
+    <div>
+      <span class="mfg-value" style="font-size: 1.5rem; flex: 1; text-align: left;">
+        <b>UNIT:</b> <span class="value-span">${data["บรรจุ"]}</span>
+      </span>
+    </div>
+  `;
     }
 
 
@@ -164,7 +194,6 @@ function generateTableForPrint(company, container) {
   } else if (company === 'companyB') {
     // --- COMPANY B:  NO CHANGES IN THIS STEP - KEEP ORIGINAL FORMAT ---
     data["Company Name"] = document.getElementById("companyNameB").value;
-    data["Brand Name"] = "IYARA ABC";
     data["Product Name"] = document.getElementById("productNameB").value;
     data["Product Name TH"] = document.getElementById("productNameThB").value;
     barcode = document.getElementById("barcodeB").value;
@@ -173,9 +202,6 @@ function generateTableForPrint(company, container) {
     data["MFG"] = document.getElementById("mfgB").value;
     data["EXP"] = document.getElementById("expB").value;
     data["บรรจุ"] = document.getElementById("unitB").value;
-    data["QTY"] = "80.00";
-    data["Name"] = "บริษัท ข.";
-    data["GHI"] = "GHI0206HHA";
 
     const table = document.createElement('table');
     table.id = "tocTable-print";
@@ -183,77 +209,47 @@ function generateTableForPrint(company, container) {
     table.style.width = '90%';
     table.style.marginLeft = 'auto';
     table.style.marginRight = 'auto';
-    table.style.marginBottom = '20px';  // <---- ADD MARGIN BOTTOM FOR SPACING
+    table.style.marginBottom = '20px';
 
     const tableBody = table.createTBody();
 
-    // 1. Main Company Name Row
+    // 1. General Company Name (Move this part first)
+    let generalCompanyNameRow = tableBody.insertRow();
+    let generalCompanyNameCell = generalCompanyNameRow.insertCell(0);
+    generalCompanyNameCell.innerHTML = "<h2 style='margin: 5px 0'>บริษัท ที.แมน ฟาร์มา จำกัด</h2>";
+    generalCompanyNameCell.style.lineHeight = '1.2'; // Adjust line height for tighter spacing
+    generalCompanyNameCell.classList.add("general-company-name");
+    generalCompanyNameCell.style.textAlign = 'center';
+    generalCompanyNameCell.colSpan = 2;
+    generalCompanyNameCell.style.borderTop = '1px solid black';
+    generalCompanyNameCell.style.borderLeft = '1px solid black';
+    generalCompanyNameCell.style.borderRight = '1px solid black';
+    generalCompanyNameCell.style.margin = '0px';
+
+    // 2. Main Company Name Row (Move this part after)
     if (data["Company Name"]) {
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = data["Company Name"];
+      cell1.innerHTML = `<h2 style='margin: 5px 0'>${data["Company Name"]}</h2>`;
       cell1.classList.add("company-name");
       cell1.style.border = '1px solid black';
       cell1.style.textAlign = 'center';
       cell1.colSpan = 2;
-    }
-
-    // 2. General Company Name
-    let generalCompanyNameRow = tableBody.insertRow();
-    let generalCompanyNameCell = generalCompanyNameRow.insertCell(0);
-    generalCompanyNameCell.innerHTML = "บริษัท ที.แมน ฟาร์มา จำกัด";
-    generalCompanyNameCell.classList.add("general-company-name");
-    generalCompanyNameCell.style.border = '1px solid black';
-    generalCompanyNameCell.style.textAlign = 'center';
-    generalCompanyNameCell.colSpan = 2;
-
-    // 3. Brand Name Row
-    if (data["Brand Name"]) {
-      let row = tableBody.insertRow();
-      let cell1 = row.insertCell(0);
-      cell1.innerHTML = "IYARA ABC";
-      cell1.classList.add("brand-name");
-      cell1.style.border = '1px solid black';
-      cell1.style.textAlign = 'center';
-      cell1.colSpan = 2;
+      cell1.style.margin = '0px';
     }
 
     // 4. Product Name Row
     if (data["Product Name"]) {
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = data["Product Name"];
+      cell1.innerHTML = `<h2 style='margin: 5px 0'>${data["Product Name"]}</h2>`;
       cell1.classList.add("product-name");
-      cell1.style.border = '1px solid black';
       cell1.style.textAlign = 'center';
       cell1.colSpan = 2;
+      cell1.style.borderRight = '1px solid black';
+      cell1.style.borderLeft = '1px solid black';
+      cell1.style.paddingTop = '20px';
     }
-    // 4.1. Product Name Thai Row
-    if (data["Product Name TH"]) {
-      let row = tableBody.insertRow();
-      let cell1 = row.insertCell(0);
-      cell1.innerHTML = data["Product Name TH"];
-      cell1.classList.add("product-name-thai");
-      cell1.style.border = '1px solid black';
-      cell1.style.textAlign = 'center';
-      cell1.colSpan = 2;
-    }
-
-    // 5. GHI and Name Row - side by side
-    let ghiNameRow = tableBody.insertRow();
-    // GHI Cell (left)
-    let ghiCell = ghiNameRow.insertCell(0);
-    ghiCell.innerHTML = "Name " + "บริษัท ข.";
-    ghiCell.classList.add("ghi-name-cell");
-    ghiCell.style.border = '1px solid black';
-    ghiCell.style.textAlign = 'center';
-    // Name Cell (right)
-    let nameCell = ghiNameRow.insertCell(1);
-    nameCell.innerHTML = "GHI" + data["GHI"];
-    nameCell.classList.add("ghi-value-cell");
-    nameCell.style.border = '1px solid black';
-    nameCell.style.textAlign = 'center';
-
 
     // 6. Barcode Row
     if (data["Barcode"]) {
@@ -269,30 +265,31 @@ function generateTableForPrint(company, container) {
       });
       barcodeCell.appendChild(barcodeSVG);
       barcodeCell.colSpan = 2;
-      barcodeCell.style.border = '1px solid black';
+      barcodeCell.style.borderRight = '1px solid black';
+      barcodeCell.style.borderLeft = '1px solid black';
       barcodeCell.style.textAlign = 'center';
-
+      barcodeCell.style.paddingTop = '5px';
 
       // 7. MFG, LOT, EXP Row - Below Barcode
       let mfgLotExpRow = tableBody.insertRow();
       let mfgLotExpCell = mfgLotExpRow.insertCell(0);
       mfgLotExpCell.colSpan = 2;
       mfgLotExpCell.classList.add("mfg-lot-exp-cell");
-      mfgLotExpCell.style.border = '1px solid black';
+      mfgLotExpCell.style.borderRight = '1px solid black';
+      mfgLotExpCell.style.borderLeft = '1px solid black';
       mfgLotExpCell.style.textAlign = 'center';
+      mfgLotExpCell.style.paddingTop = '5px';
+      mfgLotExpCell.style.margin = '5px';
 
+      // Use a flexbox container to align LOT, MFG, and EXP in the same row
+      mfgLotExpCell.innerHTML = `
+  <div style="display: flex; justify-content: center; gap: 20px; font-weight: bold;">
+    <span style="font-size: 1.5em;">LOT: <span class='value-span' style="font-size: 1em; font-weight: normal;">${data["LOT"] || ""}</span></span>
+    <span style="font-size: 1.5em;">MFG: <span class='value-span' style="font-size: 1em; font-weight: normal;">${data["MFG"] || ""}</span></span>
+    <span style="font-size: 1.5em;">EXP: <span class='value-span' style="font-size: 1em; font-weight: normal;">${data["EXP"] || ""}</span></span>
+  </div>
+`;
 
-      let mfgLotExpContent = "";
-      if (data["LOT"]) {
-        mfgLotExpContent += "LOT:<span class='value-span'>" + data["LOT"] + "</span>";
-      }
-      if (data["MFG"]) {
-        mfgLotExpContent += "MFG:<span class='value-span'>" + data["MFG"] + "</span>";
-      }
-      if (data["EXP"]) {
-        mfgLotExpContent += "EXP:<span class='value-span'>" + data["EXP"] + "</span>";
-      }
-      mfgLotExpCell.innerHTML = mfgLotExpContent;
 
 
       // 8. Unit and QTY Row - Below MFG/LOT/EXP
@@ -303,22 +300,21 @@ function generateTableForPrint(company, container) {
       unitQtyCell.style.border = '1px solid black';
       unitQtyCell.style.textAlign = 'center';
 
-
       let unitQtyContent = "";
       if (data["บรรจุ"]) {
-        unitQtyContent += "บรรจุ : <span class='value-span'>" + data["บรรจุ"] + "</span>";
+        unitQtyContent += `<h2 style='margin: 5px 0'>บรรจุ : <span class='value-span'>${data["บรรจุ"]}</span></h2>`;
       }
       if (data["QTY"]) {
-        unitQtyContent += "QTY: <span class='value-span'>" + "80.00" + "</span>";
+        unitQtyContent += `QTY: <span class='value-span'>${"80.00"}</span>`;
       }
       unitQtyCell.innerHTML = unitQtyContent;
     }
-
 
     table.appendChild(tableBody);
     container.appendChild(table);
     console.log('Table element generated:', table);
     console.log('Container element:', container);
+
   }
 }
 
@@ -398,7 +394,7 @@ function printAllTables() {
   const container = printWindow.document.createElement('div');
   if (productASelected) {
     const companyAContainer = printWindow.document.createElement('div');
-    companyAContainer.innerHTML = '<h2>Company A Label:</h2>'; // Add a heading
+    // companyAContainer.innerHTML = '<h2>Company A Label:</h2>'; // Add a heading
     // Generate tables for Company A based on print count
     for (let i = 0; i < printCount; i++) {
       generateTableForPrint('companyA', companyAContainer);
@@ -407,7 +403,7 @@ function printAllTables() {
   }
   if (productBSelected) {
     const companyBContainer = printWindow.document.createElement('div');
-    companyBContainer.innerHTML = '<h2>Company B Label:</h2>'; // Add a heading
+    // companyBContainer.innerHTML = '<h2>Company B Label:</h2>'; // Add a heading
     // Generate tables for Company B based on print count
     for (let i = 0; i < printCount; i++) {
       generateTableForPrint('companyB', companyBContainer);
@@ -480,3 +476,7 @@ $(document).ready(function () {
   });
 });
 
+
+// //Font
+
+// table.style.fontFamily = '"Tahoma", "Arial","Sarabun" sans-serif';

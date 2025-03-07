@@ -5,24 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parcel Label</title>
     <link rel="stylesheet" href="/ParcelLabelProgram/CSS/styles.css" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css"
     />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
   </head>
   <body>
-    <h2>Parcel Label Generator</h2>
-    <h2>บริษัท ที.แมน ฟาร์มา จำกัด</h2>
+    <br />
+    <h2 style="text-align: center">Parcel Label Generator</h2>
+    <br />
+    <hr />
+    <h2 style="text-align: center">CP ALL Barcode Label</h2>
     <div class="input-container" id="companyAForm">
       <div style="margin-bottom: 10px">
         <label for="companyNameA">Company Name:</label>
         <select id="companyNameA" disabled>
-          <option value="บริษัท เอ็กซ์เพรสเมด จำกัด">
-            บริษัท เอ็กซ์เพรสเมด จำกัด
-          </option>
+          <option value="บริษัท CP ALL">บริษัท CP ALL</option>
         </select>
       </div>
       <label for="productNameEngA">Product Name (Eng):</label>
@@ -31,14 +38,16 @@
         onchange="updateDropdown('companyA', this.value)"
       >
         <option value="">Select Product (Eng)</option>
-        <option value="product1A">Product A (Eng)</option>
+        <option value="product1A">Iyara AEC Syrup-Red 7-11</option>
         <option value="product2A">Product B (Eng)</option>
         <option value="product3A">Product C (Eng)</option>
       </select>
       <label for="productNameThA">Product Name (Thai):</label>
       <select id="productNameThA">
         <option value="">Select Product (Thai)</option>
-        <option value="ยาแก้ปวดหัว">ยาแก้ปวดหัว</option>
+        <option value="มะแว้ง-เออีซี ไอยราแดง 7-11">
+          มะแว้ง-เออีซี ไอยราแดง 7-11
+        </option>
         <option value="ยาแก้ไอ">ยาแก้ไอ</option>
         <option value="ยาแก้ท้องเสีย">ยาแก้ท้องเสีย</option>
       </select>
@@ -77,18 +86,21 @@
         <option value="30x8x70cc">30x8x70cc</option>
         <option value="36x10x80cc">36x10x80cc</option>
       </select>
-      <button onclick="generateTable('companyA')">
-        Generate Table (Company A)
-      </button>
       <button onclick="printTable('companyA')">Print Label (Company A)</button>
     </div>
 
-    <h2>Company B Labels</h2>
+    <br />
+    <hr />
+    <br />
+
+    <h2 style="text-align: center">บริษัท เอ็กซ์เพรสเมด จำกัด Barcode Label</h2>
     <div class="input-container" id="companyBForm">
       <div style="margin-bottom: 10px">
         <label for="companyNameB">Company Name:</label>
         <select id="companyNameB" disabled>
-          <option value="Company B">Company B</option>
+          <option value="บริษัท เอ็กซ์เพรสเมด จำกัด">
+            บริษัท เอ็กซ์เพรสเมด จำกัด
+          </option>
         </select>
       </div>
       <label for="productNameB">Product Name (Eng):</label>
@@ -97,16 +109,14 @@
         onchange="updateDropdown('companyB', this.value)"
       >
         <option value="">Select Product (Eng)</option>
-        <option value="product1B">Iyara AEC Syrup-Red 7-11</option>
+        <option value="product1B">Product A (Eng)</option>
         <option value="product2B">Product B (Eng)</option>
         <option value="product3B">Product C (Eng)</option>
       </select>
       <label for="productNameThB">Product Name (Thai):</label>
       <select id="productNameThB">
         <option value="">Select Product (Thai)</option>
-        <option value="มะแว้ง-เออีซี ไอยราแดง 7-11">
-          มะแว้ง-เออีซี ไอยราแดง 7-11
-        </option>
+        <option value="ยาแก้ปวดหัว">ยาแก้ปวดหัว</option>
         <option value="ยาB">ยาB</option>
         <option value="ยาC">ยาC</option>
       </select>
@@ -146,11 +156,10 @@
         <option value="30x8x70cc">30x8x70cc</option>
         <option value="36x10x80cc">36x10x80cc</option>
       </select>
-      <button onclick="generateTable('companyB')">
-        Generate Table (Company B)
-      </button>
       <button onclick="printTable('companyB')">Print Label (Company B)</button>
     </div>
+
+    <br />
 
     <table id="tocTable">
       <thead>
@@ -161,17 +170,17 @@
       <tbody></tbody>
     </table>
 
-    <div style="margin-top: 10px">
+    <div style="margin-top: 10px; text-align: center;">
       <label for="printCountGeneral">Labels per page (1-3):</label>
       <input type="number" id="printCountGeneral" value="1" min="1" max="3" />
-      <button onclick="printAllTables()">Print All Labels</button>
+      <button onclick="printAllTables()" style="width: 100px; height: 50px;">Print All Labels</button>
     </div>
 
     <script>
       const productData = {
         companyA: {
           product1A: {
-            productNameThA: "ยาแก้ปวดหัว",
+            productNameThA: "มะแว้ง-เออีซี ไอยราแดง 7-11",
             barcodeA: "*1234567890*",
             mfgA: "16-01-25",
             lotA: "2066803",
@@ -197,7 +206,7 @@
         },
         companyB: {
           product1B: {
-            productNameThB: "มะแว้ง-เออีซี ไอยราแดง 7-11",
+            productNameThB: "ยาแก้ปวดหัว",
             barcodeB: "*8856513009380*",
             mfgB: "16-01-25",
             lotB: "2066803",
@@ -205,7 +214,7 @@
             unitB: "24x6x60cc",
           },
           product2B: {
-            productNameThB: "ยาB", // <---- IS THIS PRESENT AND CORRECT?
+            productNameThB: "ยาB",
             barcodeB: "*9876543210*",
             mfgB: "17-02-26",
             lotB: "2066804",
@@ -213,7 +222,7 @@
             unitB: "30x8x70cc",
           },
           product3B: {
-            productNameThB: "ยาC", // <---- IS THIS PRESENT AND CORRECT?
+            productNameThB: "ยาC",
             barcodeB: "*111222333444*",
             mfgB: "18-03-27",
             lotB: "2066805",
