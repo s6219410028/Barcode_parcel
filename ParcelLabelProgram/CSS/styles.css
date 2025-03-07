@@ -1,7 +1,6 @@
-/* body {
+body {
   font-family: "Sarabun", sans-serif;
-
-} */
+}
 
 .input-container {
   width: 400px;
@@ -30,80 +29,60 @@
 }
 
 table {
-  border-collapse: collapse; /* Ensures a clean outer border */
-  /* Outer border */
+  border-collapse: collapse;
   width: 100%;
 }
 
 th,
 td {
-  border: none; /* Removes internal borders */
-  padding: 5px; /* Adds spacing */
+  border: none;
+  padding: 5px;
   text-align: left;
 }
 
-/* --- Company A Specific Styles (Image-Like Format) --- */
-
 .company-name-a-main {
-  font-size: 24px; /* Adjust as needed to match image */
-  font-weight: bold; /* Make it bolder */
+  font-size: 24px;
+  font-weight: bold;
 }
 
 .general-company-name-a {
-  font-size: 12px; /* Make it smaller */
-  color: #888; /* Make it lighter gray color, less prominent */
+  font-size: 12px;
+  color: #888;
 }
 
 .product-code-row-a td {
-  font-size: 16px; /* Adjust as needed */
-  border-top: 1px solid black; /* Keep top border for Product Code row */
+  font-size: 16px;
+  border-top: 1px solid black;
   text-align: left;
   padding-left: 5px;
 }
 
-.product-value-a {
-  font-weight: normal; /* Product name itself - styled differently from "PRODUCT CODE :" */
-}
-
-.mfg-lot-unit-cell-a {
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.mfg-lot-cell-a {
-  font-size: 14px;
-  line-height: 1.2;
-  display: flex;
-  justify-content: space-between; /* Correct alignment */
-  padding-left: 10px;
-  padding-right: 10px;
-  border-top: 1px solid black;
-  border-bottom: none;
-  border-left: 1px solid black;
-  border-right: 1px solid black;
-  text-align: left;
-}
-
+.mfg-lot-cell-a,
 .unit-cell-a {
   font-size: 14px;
   line-height: 1.2;
   padding-left: 10px;
   padding-right: 10px;
-  border-top: none;
-  border-bottom: 1px solid black;
   border-left: 1px solid black;
   border-right: 1px solid black;
   text-align: left;
 }
 
+.mfg-lot-cell-a {
+  border-top: 1px solid black;
+}
+
+.unit-cell-a {
+  border-bottom: 1px solid black;
+}
+
 @media print {
   body > *:not(#print-container) {
-    /* Hide everything directly inside body EXCEPT print-container */
     visibility: hidden;
   }
   #print-container,
   #print-container * {
-    visibility: visible; /* Make print-container and its content visible */
+    visibility: visible;
   }
   #print-container {
     display: block;
@@ -113,7 +92,7 @@ td {
   }
   #print-container table {
     border-collapse: collapse;
-    width: 90%; /* 90% width as requested */
+    width: 90%;
     font-size: 12pt;
     margin-left: auto;
     margin-right: auto;
@@ -122,11 +101,9 @@ td {
     display: block;
     page-break-before: always;
   }
-
   #print-container table:first-of-type {
-    page-break-before: avoid; /* Avoid page break for the very first label */
+    page-break-before: avoid;
   }
-
   #print-container th,
   #print-container td {
     border: 1px solid black;
@@ -135,7 +112,6 @@ td {
     vertical-align: top;
     box-sizing: border-box;
   }
-
   #print-container tbody tr:first-child td {
     display: block;
     width: 100%;
@@ -143,7 +119,6 @@ td {
     font-weight: bold;
     font-size: 1.4em;
     padding-bottom: 5px;
-    box-sizing: border-box;
   }
   #print-container tbody tr:nth-child(2) td {
     display: block;
@@ -151,70 +126,22 @@ td {
     text-align: center;
     font-size: 1.2em;
     padding-bottom: 5px;
-    box-sizing: border-box;
   }
-
   #print-container tbody tr:nth-child(5) td,
   #print-container tbody tr:nth-child(6) td {
     display: block;
     width: 100%;
-    box-sizing: border-box;
   }
-
   #print-container tbody tr:nth-child(6) td {
     padding-left: 10px;
   }
-
   #print-container svg {
     width: 100%;
     height: auto;
     display: block;
   }
-
   #print-container tbody tr:nth-child(5) td {
     width: 100%;
     padding: 0 !important;
   }
-
-  /* Hide the "Company Name for Labels:" label in print */
-  body > div > label[for="generalCompanyName"] {
-    display: none;
-  }
-}
-
-/* --- Existing CSS Styles (Keep these - do not remove) --- */
-.company-name {
-  font-size: 18px;
-  font-weight: bold;
-}
-
-.general-company-name {
-  font-size: 14px;
-}
-
-.product-name {
-  font-size: 16px;
-  font-weight: bold;
-}
-
-.product-name-thai {
-  font-size: 14px;
-}
-
-.ghi-name-cell,
-.ghi-value-cell {
-  font-size: 14px;
-}
-
-.mfg-lot-exp-cell,
-.unit-qty-cell {
-  font-size: 14px;
-}
-
-#tocTable-print td {
-  padding: 5px;
-}
-
-.mfg-value {
-  margin-right: 20px; /* Adjust space between MFG and LOT */
 }

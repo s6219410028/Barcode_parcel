@@ -1,4 +1,4 @@
-
+// old code taht generate from AI but never used
 const productData = {
     companyA: {
       product1A: {
