@@ -1,3 +1,52 @@
+// Load productData from localStorage (if available) or use default data
+let productData = JSON.parse(localStorage.getItem("productData")) || {
+  companyA: {
+    "Iyara AEC Syrup-Red 7-11": {
+      productNameThA: "มะแว้ง-เออีซี ไอยราแดง 7-11",
+      barcodeA: "*8856513009380*",
+      mfgA: "16-01-25",
+      lotA: "2066803",
+      expA: "22-02-27",
+      unitA: "24x6x60cc",
+    },
+    product2A: {
+      productNameThA: "ยาแก้ไอ",
+      barcodeA: "*654684641515*",
+      mfgA: "17-02-26",
+      lotA: "2066804",
+      expA: "23-03-28",
+      unitA: "30x8x70cc",
+    },
+  },
+  companyB: {
+    product1B: {
+      productNameThB: "ยาแก้ปวดหัว",
+      barcodeB: "*8856513009380*",
+      mfgB: "16-01-25",
+      lotB: "2066803",
+      expB: "22-02-27",
+      unitB: "24x6x60cc",
+    },
+  },
+};
+
+// Save the product data back to localStorage (so it persists after refresh)
+localStorage.setItem("productData", JSON.stringify(productData));
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 window.onload = function () {
   document.querySelectorAll("p, td, span, div").forEach(element => {
     if (/[ก-๙]/.test(element.textContent)) {
@@ -6,6 +55,16 @@ window.onload = function () {
       element.style.fontFamily = "Tahoma, Arial, sans-serif"; // English font
     }
   });
+  // Load productData from localStorage
+  let savedData = localStorage.getItem("productData");
+  if (savedData) {
+    productData = JSON.parse(savedData);
+    console.log("Loaded productData from localStorage:", productData);
+  }
+
+  // Update both dropdowns with stored data
+  updateProductDropdown("companyA");
+  updateProductDropdown("companyB");
 };
 
 
@@ -18,36 +77,54 @@ function updateDropdown(company, productNameEngValue) {
     const data = companyData[productNameEngValue];
     console.log('Data found:', data);
 
-    if (company === 'companyA') {  // <---- ADD THIS CONDITION
-      console.log('Thai Product Name for Company A from data:', data.productNameThA);
-      document.getElementById('productNameThA').value = data.productNameThA || ''; // Auto-fill for Company A
-    } else if (company === 'companyB') { // Keep the Company B condition as it is
-      console.log('Thai Product Name from data:', data.productNameThB);
-      document.getElementById('productNameThB').value = data.productNameThB || '';
-    }
+    // Define suffix for dynamic field selection
+    const suffix = company === 'companyA' ? 'A' : 'B';
 
-    // Update other dropdowns (Barcode, MFG, LOT, EXP, UNIT) - This part is already general and works for both companies
-    document.getElementById('barcode' + company.slice(-1).toUpperCase()).value = data['barcode' + company.slice(-1).toUpperCase()] || '';
-    document.getElementById('mfg' + company.slice(-1).toUpperCase()).value = data['mfg' + company.slice(-1).toUpperCase()] || '';
-    document.getElementById('lot' + company.slice(-1).toUpperCase()).value = data['lot' + company.slice(-1).toUpperCase()] || '';
-    document.getElementById('exp' + company.slice(-1).toUpperCase()).value = data['exp' + company.slice(-1).toUpperCase()] || '';
-    document.getElementById('unit' + company.slice(-1).toUpperCase()).value = data['unit' + company.slice(-1).toUpperCase()] || '';
+    // Map correct keys
+    document.getElementById('productNameTh' + suffix).value = data.productNameTh || '';
+    document.getElementById('barcode' + suffix).value = data.barcode || '';
+    document.getElementById('mfg' + suffix).value = data.mfg || '';
+    document.getElementById('lot' + suffix).value = data.lot || '';
+    document.getElementById('exp' + suffix).value = data.exp || '';
+    document.getElementById('unit' + suffix).value = data.unit || '';
 
+    console.log(`Updated fields for ${suffix}:`, {
+      productNameTh: document.getElementById('productNameTh' + suffix).value,
+      barcode: document.getElementById('barcode' + suffix).value,
+      mfg: document.getElementById('mfg' + suffix).value,
+      lot: document.getElementById('lot' + suffix).value,
+      exp: document.getElementById('exp' + suffix).value,
+      unit: document.getElementById('unit' + suffix).value
+    });
 
   } else {
     console.log('No data found for product or company.');
-    if (company === 'companyA') { // <---- ADD THIS CONDITION for clearing Company A too
-      document.getElementById('productNameThA').value = ''; // Clear Thai Product Name for Company A
-    } else if (company === 'companyB') { // Keep Company B clear condition
-      document.getElementById('productNameThB').value = '';
-    }
-    document.getElementById('barcode' + company.slice(-1).toUpperCase()).value = '';
-    document.getElementById('mfg' + company.slice(-1).toUpperCase()).value = '';
-    document.getElementById('lot' + company.slice(-1).toUpperCase()).value = '';
-    document.getElementById('exp' + company.slice(-1).toUpperCase()).value = '';
-    document.getElementById('unit' + company.slice(-1).toUpperCase()).value = '';
+
+    // Clear fields if no data found
+    const suffix = company === 'companyA' ? 'A' : 'B';
+
+    document.getElementById('productNameTh' + suffix).value = '';
+    document.getElementById('barcode' + suffix).value = '';
+    document.getElementById('mfg' + suffix).value = '';
+    document.getElementById('lot' + suffix).value = '';
+    document.getElementById('exp' + suffix).value = '';
+    document.getElementById('unit' + suffix).value = '';
+
+    console.log(`Cleared fields for ${suffix}`);
   }
 }
+
+
+
+
+// console.log('Data found for', productNameEngValue, ':', JSON.stringify(data, null, 2));
+// console.log('Data found for', productNameTh, ':', JSON.stringify(data, null, 2));
+// console.log('Data found for', barcode, ':', JSON.stringify(data, null, 2));
+// console.log('Data found for', mfg, ':', JSON.stringify(data, null, 2));
+// console.log('Data found for', lot, ':', JSON.stringify(data, null, 2));
+// console.log('Data found for', exp, ':', JSON.stringify(data, null, 2));
+// console.log('Data found for', unit, ':', JSON.stringify(data, null, 2));
+
 
 
 function generateTableForPrint(company, container) {
@@ -69,7 +146,7 @@ function generateTableForPrint(company, container) {
     const table = document.createElement('table');
     table.id = "tocTable-print";
     table.style.borderCollapse = 'collapse';
-    table.style.width = '90%';
+    table.style.width = '100%';
     table.style.marginTop = '20px';
     table.style.marginLeft = 'auto';
     table.style.marginRight = 'auto';
@@ -88,7 +165,7 @@ function generateTableForPrint(company, container) {
     cell1.classList.add("product-code-row-a");
     cell1.style.border = '1px solid black';
     cell1.style.textAlign = 'left';
-    cell1.style.paddingLeft = '100px';
+    cell1.style.paddingLeft = '70px';
     cell1.style.paddingTop = '20px';
     cell1.style.paddingBottom = '0px';
 
@@ -98,11 +175,11 @@ function generateTableForPrint(company, container) {
     if (data["Product Name"]) {
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = `<span style="font-size: 1.25rem; font-weight: bold;">Product_Name_Eng:</span>
+      cell1.innerHTML = `<span style="font-size: 1.5rem; font-weight: bold;">Product_Name_Eng:</span>
       <span class='product-name-eng-a'>${data["Product Name"]}</span>`;
       cell1.classList.add("product-name-eng-row-a");
       cell1.style.textAlign = 'left';
-      cell1.style.paddingLeft = '100px';
+      cell1.style.paddingLeft = '70px';
       cell1.style.borderLeft = '1px solid black';
       cell1.style.borderRight = '1px solid black';
       cell1.colSpan = 2;
@@ -115,11 +192,11 @@ function generateTableForPrint(company, container) {
     if (data["Product Name TH"]) {
       let row = tableBody.insertRow();
       let cell1 = row.insertCell(0);
-      cell1.innerHTML = `<span style="font-size: 1.25rem; font-weight: bold;">Product_Name_Th : </span>
-      <span class='product-name-thai-a'>${data["Product Name TH"]}</span>`;
+      cell1.innerHTML = `<span style="font-size: 1.5rem; font-weight: bold;">Product_Name_Th : </span>
+      <span  class='product-name-thai-a'>${data["Product Name TH"]}</span>`;
       cell1.classList.add("product-name-thai-row-a");
       cell1.style.textAlign = 'left';
-      cell1.style.paddingLeft = '100px';
+      cell1.style.paddingLeft = '70px';
       cell1.style.borderLeft = '1px solid black';
       cell1.style.borderRight = '1px solid black';
       cell1.colSpan = 2;
@@ -133,11 +210,16 @@ function generateTableForPrint(company, container) {
       let barcodeCell = barcodeRow.insertCell(0);
 
       const barcodeSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      JsBarcode(barcodeSVG, data["Barcode"], {
-        format: "CODE128",
+      let barcodeData = data["Barcode"];
+
+      // Remove `*` from the start and end (to avoid double `*`)
+      barcodeData = barcodeData.replace(/^\*|\*$/g, "");
+
+      JsBarcode(barcodeSVG, barcodeData, {
+        format: "CODE39",
         displayValue: true,
-        width: 1.5,
-        height: 60
+        width: 1.3,  // Increase width to make it less crowded
+        height: 40
       });
 
       barcodeCell.appendChild(barcodeSVG);
@@ -157,12 +239,12 @@ function generateTableForPrint(company, container) {
       mfgLotCell.style.borderLeft = "1px solid black";
       mfgLotCell.style.borderRight = "1px solid black";
       mfgLotCell.style.textAlign = "left";
-      mfgLotCell.style.paddingLeft = "100px";
+      mfgLotCell.style.paddingLeft = "70px";
 
       mfgLotCell.innerHTML = `
     <div style="display: flex; justify-content: space-between; width: 80%;">
-      <span class="mfg-value" style="font-size: 1.25rem; flex: 1; text-align: left;"><b>MFG:</b> <span class="value-span">${data["MFG"] || ""}</span></span>
-      <span class="lot-value" style="font-size: 1.25rem; text-align: right;"><b>LOT:</b> <span class="value-span">${data["LOT"] || ""}</span></span>
+      <span class="mfg-value" style="font-size: 1.5rem; flex: 1; text-align: left;"><b>MFG:</b> <span class="value-span">${data["MFG"] || ""}</span></span>
+      <span class="lot-value" style="font-size: 1.5rem; text-align: right;"><b>LOT:</b> <span class="value-span">${data["LOT"] || ""}</span></span>
     </div>
   `;
     }
@@ -175,7 +257,7 @@ function generateTableForPrint(company, container) {
       unitCell.classList.add("unit-cell-a");
       unitCell.style.border = '1px solid black';
       unitCell.style.textAlign = 'left';
-      unitCell.style.paddingLeft = '100px';
+      unitCell.style.paddingLeft = '70px';
 
       unitCell.innerHTML = `
     <div>
@@ -206,7 +288,7 @@ function generateTableForPrint(company, container) {
     const table = document.createElement('table');
     table.id = "tocTable-print";
     table.style.borderCollapse = 'collapse';
-    table.style.width = '90%';
+    table.style.width = '100%';
     table.style.marginLeft = 'auto';
     table.style.marginRight = 'auto';
     table.style.marginBottom = '20px';
@@ -248,7 +330,7 @@ function generateTableForPrint(company, container) {
       cell1.colSpan = 2;
       cell1.style.borderRight = '1px solid black';
       cell1.style.borderLeft = '1px solid black';
-      cell1.style.paddingTop = '20px';
+      cell1.style.paddingTop = '10px';
     }
 
     // 6. Barcode Row
@@ -257,18 +339,22 @@ function generateTableForPrint(company, container) {
       let barcodeCell = barcodeRow.insertCell(0);
 
       const barcodeSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-      JsBarcode(barcodeSVG, data["Barcode"], {
-        format: "CODE128",
+      let barcodeData = data["Barcode"];
+
+      // Remove `*` from the start and end (to avoid double `*`)
+      barcodeData = barcodeData.replace(/^\*|\*$/g, "");
+
+      JsBarcode(barcodeSVG, barcodeData, {
+        format: "CODE39",
         displayValue: true,
-        width: 1.5,
-        height: 60
+        width: 1.3,  // Increase width to make it less crowded
+        height: 40
       });
       barcodeCell.appendChild(barcodeSVG);
       barcodeCell.colSpan = 2;
       barcodeCell.style.borderRight = '1px solid black';
       barcodeCell.style.borderLeft = '1px solid black';
       barcodeCell.style.textAlign = 'center';
-      barcodeCell.style.paddingTop = '5px';
 
       // 7. MFG, LOT, EXP Row - Below Barcode
       let mfgLotExpRow = tableBody.insertRow();
@@ -305,8 +391,9 @@ function generateTableForPrint(company, container) {
         unitQtyContent += `<h2 style='margin: 5px 0'>บรรจุ : <span class='value-span'>${data["บรรจุ"]}</span></h2>`;
       }
       if (data["QTY"]) {
-        unitQtyContent += `QTY: <span class='value-span'>${"80.00"}</span>`;
+        unitQtyContent += `QTY: <span class='value-span'>${data["QTY"]}</span>`;
       }
+
       unitQtyCell.innerHTML = unitQtyContent;
     }
 
@@ -466,17 +553,213 @@ function generateTable(company) {
 
 
 $(document).ready(function () {
-  $('#productNameEngA').selectize({
+  // Initialize selectize on both product dropdowns
+  const productSelectA = $('#productNameEngA').selectize({
     create: false,
     sortField: 'text'
+  })[0].selectize;
+
+  const productSelectB = $('#productNameB').selectize({
+    create: false,
+    sortField: 'text'
+  })[0].selectize;
+
+  // Function to refresh dropdowns after adding/removing products
+  window.updateProductDropdown = function (company) {
+    if (company === "companyA") {
+      productSelectA.clearOptions();
+      Object.keys(productData.companyA).forEach(product => {
+        productSelectA.addOption({ value: product, text: product });
+      });
+      productSelectA.refreshOptions(false);
+    } else if (company === "companyB") {
+      productSelectB.clearOptions();
+      Object.keys(productData.companyB).forEach(product => {
+        productSelectB.addOption({ value: product, text: product });
+      });
+      productSelectB.refreshOptions(false);
+    }
+  };
+
+  // Function to delete a product from dropdown and productData
+  function deleteProduct(company) {
+    let selectedProduct =
+      company === "companyA"
+        ? productSelectA.getValue()
+        : productSelectB.getValue();
+
+    if (!selectedProduct) {
+      alert("Please select a product to delete!");
+      return;
+    }
+
+    // Confirm deletion
+    if (!confirm(`Are you sure you want to delete "${selectedProduct}" from ${company}?`)) {
+      return;
+    }
+
+    // Remove product from productData
+    delete productData[company][selectedProduct];
+
+    // Remove product from dropdown
+    if (company === "companyA") {
+      productSelectA.removeOption(selectedProduct);
+    } else if (company === "companyB") {
+      productSelectB.removeOption(selectedProduct);
+    }
+
+    alert(`Product "${selectedProduct}" deleted successfully!`);
+  }
+
+  // Attach delete button event listeners
+  $("#deleteProductA").on("click", function () {
+    deleteProduct("companyA");
   });
-  $('#productNameB').selectize({
-    create: false,
-    sortField: 'text'
+
+  $("#deleteProductB").on("click", function () {
+    deleteProduct("companyB");
   });
 });
 
+// Wait for the DOM to load
+document.addEventListener("DOMContentLoaded", function () {
+  const modal = document.getElementById("productModal");
+  const openModalBtn = document.getElementById("openProductModal");
+  const closeModalBtn = document.querySelector(".close");
 
-// //Font
+  openModalBtn.addEventListener("click", () => modal.style.display = "block");
+  closeModalBtn.addEventListener("click", () => modal.style.display = "none");
 
-// table.style.fontFamily = '"Tahoma", "Arial","Sarabun" sans-serif';
+  window.addEventListener("click", (event) => {
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  });
+});
+
+// Renaming productData to avoid conflicts
+let newProductData = {
+  companyA: {},
+  companyB: {},
+};
+
+
+function addNewProduct(company) {
+  const modal = document.getElementById("productModal");
+  let productEng = document.getElementById("newProductEng").value.trim();
+  let productTh = document.getElementById("newProductTh").value.trim();
+  let barcode = document.getElementById("newBarcode").value.trim();
+  let mfg = document.getElementById("newMfg").value.trim();
+  let lot = document.getElementById("newLot").value.trim();
+  let exp = document.getElementById("newExp").value.trim();
+  let unit = document.getElementById("newUnit").value.trim();
+
+  if (!productEng || !productTh || !barcode || !mfg || !lot || !exp || !unit) {
+    alert("Please fill all fields!");
+    return;
+  }
+
+  // Ensure productData is initialized for the company
+  if (!productData[company]) {
+    productData[company] = {};
+  }
+
+  // Store the product data properly
+  productData[company][productEng] = {
+    productNameTh: productTh,
+    barcode: barcode,
+    mfg: mfg,
+    lot: lot,
+    exp: exp,
+    unit: unit,
+  };
+
+  console.log(`Product added to ${company}:`, productData[company]);
+
+  // Store the updated productData in localStorage to keep data after refresh
+  localStorage.setItem("productData", JSON.stringify(productData));
+
+  // Clear input fields
+  document.getElementById("newProductEng").value = "";
+  document.getElementById("newProductTh").value = "";
+  document.getElementById("newBarcode").value = "";
+  document.getElementById("newMfg").value = "";
+  document.getElementById("newLot").value = "";
+  document.getElementById("newExp").value = "";
+  document.getElementById("newUnit").value = "";
+
+  // Close modal after adding product
+  modal.style.display = "none";
+
+  alert(`Product added to ${company} successfully!`);
+
+  // Update the dropdown after adding a new product
+  updateProductDropdown(company);
+}
+
+
+function updateProductDropdown(company) {
+  let dropdownId = company === "companyA" ? "#productNameEngA" : "#productNameB";
+  let selectize = $(dropdownId)[0].selectize;
+
+  // Clear the existing dropdown options
+  selectize.clearOptions();
+
+  // Add new options from productData
+  Object.keys(productData[company]).forEach((product) => {
+    selectize.addOption({ value: product, text: product });
+  });
+
+  // Refresh the dropdown
+  selectize.refreshOptions();
+}
+
+
+
+
+
+
+
+//delete product function
+
+function deleteProduct() {
+  // Get selected products
+  const companyAProduct = document.getElementById("productNameEngA").value;
+  const companyBProduct = document.getElementById("productNameB").value;
+
+  if (!companyAProduct && !companyBProduct) {
+    alert("Please select a product to delete.");
+    return;
+  }
+
+  let confirmDelete = confirm("Are you sure you want to delete this product?");
+  if (!confirmDelete) return;
+
+  // Delete from company A if selected
+  if (companyAProduct && productData.companyA[companyAProduct]) {
+    delete productData.companyA[companyAProduct];
+    removeOptionFromDropdown("productNameEngA", companyAProduct);
+  }
+
+  // Delete from company B if selected
+  if (companyBProduct && productData.companyB[companyBProduct]) {
+    delete productData.companyB[companyBProduct];
+    removeOptionFromDropdown("productNameB", companyBProduct);
+  }
+
+  alert("Product deleted successfully.");
+}
+
+// Helper function to remove option from dropdown
+function removeOptionFromDropdown(selectId, productValue) {
+  let selectElement = document.getElementById(selectId);
+  for (let i = 0; i < selectElement.options.length; i++) {
+    if (selectElement.options[i].value === productValue) {
+      selectElement.remove(i);
+      break;
+    }
+  }
+}
+
+
+

@@ -9,7 +9,10 @@
       href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
       rel="stylesheet"
     />
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
 
     <link
       rel="stylesheet"
@@ -38,7 +41,9 @@
         onchange="updateDropdown('companyA', this.value)"
       >
         <option value="">Select Product (Eng)</option>
-        <option value="product1A">Iyara AEC Syrup-Red 7-11</option>
+        <option value="Iyara AEC Syrup-Red 7-11">
+          Iyara AEC Syrup-Red 7-11
+        </option>
         <option value="product2A">Product B (Eng)</option>
         <option value="product3A">Product C (Eng)</option>
       </select>
@@ -54,7 +59,7 @@
       <label for="barcodeA">Barcode:</label>
       <select id="barcodeA">
         <option value="">Select Barcode</option>
-        <option value="*1234567890*">*1234567890*</option>
+        <option value="*8856513009380*">*8856513009380*</option>
         <option value="*654684641515*">*654684641515*</option>
         <option value="*5646149923*">*5646149923*</option>
       </select>
@@ -160,6 +165,7 @@
     </div>
 
     <br />
+    <br />
 
     <table id="tocTable">
       <thead>
@@ -170,21 +176,71 @@
       <tbody></tbody>
     </table>
 
-    <div style="margin-top: 10px; text-align: center;">
+    <div style="margin-top: 10px; text-align: center">
       <label for="printCountGeneral">Labels per page (1-3):</label>
       <input type="number" id="printCountGeneral" value="1" min="1" max="3" />
-      <button onclick="printAllTables()" style="width: 150px; height: 40px;border:2px solid black;">Print All Labels</button>
+      <button
+        onclick="printAllTables()"
+        style="width: 150px; height: 40px; border: 2px solid black"
+      >
+        Print All Labels
+      </button>
     </div>
-    <br>
-    <br>
+    <br />
+    <br />
 
+    <hr />
+    <br />
 
-    <script>
+    <br />
+
+    <!-- Button to open the modal -->
+    <div style="text-align: center">
+      <button id="openProductModal">Add New Product</button>
+      <button id="deleteProductA">Delete Selected Product (Company A)</button>
+      <button id="deleteProductB">Delete Selected Product (Company B)</button>
+    </div>
+
+    <!-- Modal for adding a new product -->
+    <div id="productModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Add New Product</h3>
+
+        <label for="newProductEng">Product Name (Eng):</label>
+        <input type="text" id="newProductEng" />
+
+        <label for="newProductTh">Product Name (Thai):</label>
+        <input type="text" id="newProductTh" />
+
+        <label for="newBarcode">Barcode:</label>
+        <input type="text" id="newBarcode" />
+
+        <label for="newMfg">MFG:</label>
+        <input type="text" id="newMfg" />
+
+        <label for="newLot">LOT:</label>
+        <input type="text" id="newLot" />
+
+        <label for="newExp">EXP:</label>
+        <input type="text" id="newExp" />
+
+        <label for="newUnit">UNIT:</label>
+        <input type="text" id="newUnit" />
+
+        <button onclick="addNewProduct('companyA')">Add to CP ALL</button>
+        <button onclick="addNewProduct('companyB')">Add to ExpressMed</button>
+      </div>
+    </div>
+
+    <br /><br />
+
+    <!-- <script>
       const productData = {
         companyA: {
-          product1A: {
+          "Iyara AEC Syrup-Red 7-11": {
             productNameThA: "มะแว้ง-เออีซี ไอยราแดง 7-11",
-            barcodeA: "*1234567890*",
+            barcodeA: "*8856513009380*",
             mfgA: "16-01-25",
             lotA: "2066803",
             expA: "22-02-27",
@@ -234,7 +290,7 @@
           },
         },
       };
-    </script>
+    </script> -->
 
     <script src="/ParcelLabelProgram/JS/script.js"></script>
   </body>
