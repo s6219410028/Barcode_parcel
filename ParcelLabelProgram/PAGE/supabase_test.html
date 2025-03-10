@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Form</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0-beta.4/dist/supabase.min.js"></script>
+</head>
+<body>
+
+<h1>Add New Product</h1>
+<form id="product-form">
+  <label for="product_name">Product Name:</label>
+  <input type="text" id="product_name" name="product_name" required><br><br>
+
+  <label for="product_description">Product Description:</label>
+  <textarea id="product_description" name="product_description" required></textarea><br><br>
+
+  <label for="price">Price:</label>
+  <input type="number" id="price" name="price" step="0.01" required><br><br>
+
+  <label for="company_id">Select Company:</label>
+  <select id="company_id" name="company_id" required>
+    <!-- Companies will be populated here -->
+  </select><br><br>
+
+  <input type="submit" value="Add Product">
+</form>
+
+<script>
+  // Initialize Supabase client
+  const supabaseUrl = 'https://YOUR-SUPABASE-URL.supabase.co';  // Replace with your Supabase URL
+  const supabaseKey = 'YOUR-SUPABASE-KEY';  // Replace with your Supabase public key
+  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+
+  // Get the list of companies and populate the dropdown
+  async function loadCompanies() {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('id, company_name');
+
+    if (error) {
+      console.error('Error fetching companies:', error);
+    } else {
+      const companySelect = document.getElementById('company_id');
+      data.forEach(company => {
+        const option = document.createElement('option');
+        option.value = company.id;
+        option.textContent = company.company_name;
+        companySelect.appendChild(option);
+      });
+    }
+  }
+
+  // Handle form submission to add product
+  async function handleFormSubmit(event) {
+    event.preventDefault();  // Prevent the form from refreshing the page
+
+    const productName = document.getElementById('product_name').value;
+    const productDescription = document.getElementById('product_description').value;
+    const price = parseFloat(document.getElementById('price').value);
+    const companyId = parseInt(document.getElementById('company_id').value);
+
+    const { data, error } = await supabase
+      .from('products')
+      .insert([
+        { product_name: productName, product_description: productDescription, price, company_id: companyId }
+      ]);
+
+    if (error) {
+      console.error('Error adding product:', error);
+    } else {
+      alert('Product added successfully!');
+    }
+  }
+
+  // Load companies when the page loads
+  window.onload = async function () {
+    await loadCompanies();
+    const form = document.getElementById('product-form');
+    form.addEventListener('submit', handleFormSubmit);
+  }
+</script>
+
+</body>
+</html>

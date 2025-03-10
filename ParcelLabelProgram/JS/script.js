@@ -1,37 +1,37 @@
-// Load productData from localStorage (if available) or use default data
-let productData = JSON.parse(localStorage.getItem("productData")) || {
-  companyA: {
-    "Iyara AEC Syrup-Red 7-11": {
-      productNameThA: "มะแว้ง-เออีซี ไอยราแดง 7-11",
-      barcodeA: "*8856513009380*",
-      mfgA: "16-01-25",
-      lotA: "2066803",
-      expA: "22-02-27",
-      unitA: "24x6x60cc",
-    },
-    product2A: {
-      productNameThA: "ยาแก้ไอ",
-      barcodeA: "*654684641515*",
-      mfgA: "17-02-26",
-      lotA: "2066804",
-      expA: "23-03-28",
-      unitA: "30x8x70cc",
-    },
-  },
-  companyB: {
-    product1B: {
-      productNameThB: "ยาแก้ปวดหัว",
-      barcodeB: "*8856513009380*",
-      mfgB: "16-01-25",
-      lotB: "2066803",
-      expB: "22-02-27",
-      unitB: "24x6x60cc",
-    },
-  },
-};
+// // Load productData from localStorage (if available) or use default data
+// let productData = JSON.parse(localStorage.getItem("productData")) || {
+//   companyA: {
+//     "Iyara AEC Syrup-Red 7-11": {
+//       productNameThA: "มะแว้ง-เออีซี ไอยราแดง 7-11",
+//       barcodeA: "*8856513009380*",
+//       mfgA: "16-01-25",
+//       lotA: "2066803",
+//       expA: "22-02-27",
+//       unitA: "24x6x60cc",
+//     },
+//     product2A: {
+//       productNameThA: "ยาแก้ไอ",
+//       barcodeA: "*654684641515*",
+//       mfgA: "17-02-26",
+//       lotA: "2066804",
+//       expA: "23-03-28",
+//       unitA: "30x8x70cc",
+//     },
+//   },
+//   companyB: {
+//     product1B: {
+//       productNameThB: "ยาแก้ปวดหัว",
+//       barcodeB: "*8856513009380*",
+//       mfgB: "16-01-25",
+//       lotB: "2066803",
+//       expB: "22-02-27",
+//       unitB: "24x6x60cc",
+//     },
+//   },
+// };
 
-// Save the product data back to localStorage (so it persists after refresh)
-localStorage.setItem("productData", JSON.stringify(productData));
+// // Save the product data back to localStorage (so it persists after refresh)
+// localStorage.setItem("productData", JSON.stringify(productData));
 
 
 
@@ -55,16 +55,16 @@ window.onload = function () {
       element.style.fontFamily = "Tahoma, Arial, sans-serif"; // English font
     }
   });
-  // Load productData from localStorage
-  let savedData = localStorage.getItem("productData");
-  if (savedData) {
-    productData = JSON.parse(savedData);
-    console.log("Loaded productData from localStorage:", productData);
-  }
+  // // Load productData from localStorage
+  // let savedData = localStorage.getItem("productData");
+  // if (savedData) {
+  //   productData = JSON.parse(savedData);
+  //   console.log("Loaded productData from localStorage:", productData);
+  // }
 
-  // Update both dropdowns with stored data
-  updateProductDropdown("companyA");
-  updateProductDropdown("companyB");
+  // // Update both dropdowns with stored data
+  // updateProductDropdown("companyA");
+  // updateProductDropdown("companyB");
 };
 
 
@@ -563,203 +563,197 @@ $(document).ready(function () {
     create: false,
     sortField: 'text'
   })[0].selectize;
+}());
 
-  // Function to refresh dropdowns after adding/removing products
-  window.updateProductDropdown = function (company) {
-    if (company === "companyA") {
-      productSelectA.clearOptions();
-      Object.keys(productData.companyA).forEach(product => {
-        productSelectA.addOption({ value: product, text: product });
-      });
-      productSelectA.refreshOptions(false);
-    } else if (company === "companyB") {
-      productSelectB.clearOptions();
-      Object.keys(productData.companyB).forEach(product => {
-        productSelectB.addOption({ value: product, text: product });
-      });
-      productSelectB.refreshOptions(false);
-    }
-  };
+//   // Function to refresh dropdowns after adding/removing products
+//   window.updateProductDropdown = function (company) {
+//     if (company === "companyA") {
+//       productSelectA.clearOptions();
+//       Object.keys(productData.companyA).forEach(product => {
+//         productSelectA.addOption({ value: product, text: product });
+//       });
+//       productSelectA.refreshOptions(false);
+//     } else if (company === "companyB") {
+//       productSelectB.clearOptions();
+//       Object.keys(productData.companyB).forEach(product => {
+//         productSelectB.addOption({ value: product, text: product });
+//       });
+//       productSelectB.refreshOptions(false);
+//     }
+//   };
 
-  // Function to delete a product from dropdown and productData
-  function deleteProduct(company) {
-    let selectedProduct =
-      company === "companyA"
-        ? productSelectA.getValue()
-        : productSelectB.getValue();
+//   // Function to delete a product from dropdown and productData
+//   function deleteProduct(company) {
+//     let selectedProduct =
+//       company === "companyA"
+//         ? productSelectA.getValue()
+//         : productSelectB.getValue();
 
-    if (!selectedProduct) {
-      alert("Please select a product to delete!");
-      return;
-    }
+//     if (!selectedProduct) {
+//       alert("Please select a product to delete!");
+//       return;
+//     }
 
-    // Confirm deletion
-    if (!confirm(`Are you sure you want to delete "${selectedProduct}" from ${company}?`)) {
-      return;
-    }
+//     // Confirm deletion
+//     if (!confirm(`Are you sure you want to delete "${selectedProduct}" from ${company}?`)) {
+//       return;
+//     }
 
-    // Remove product from productData
-    delete productData[company][selectedProduct];
+//     // Remove product from productData
+//     delete productData[company][selectedProduct];
 
-    // Remove product from dropdown
-    if (company === "companyA") {
-      productSelectA.removeOption(selectedProduct);
-    } else if (company === "companyB") {
-      productSelectB.removeOption(selectedProduct);
-    }
+//     // Remove product from dropdown
+//     if (company === "companyA") {
+//       productSelectA.removeOption(selectedProduct);
+//     } else if (company === "companyB") {
+//       productSelectB.removeOption(selectedProduct);
+//     }
 
-    alert(`Product "${selectedProduct}" deleted successfully!`);
-  }
+//     alert(`Product "${selectedProduct}" deleted successfully!`);
+//   }
 
-  // Attach delete button event listeners
-  $("#deleteProductA").on("click", function () {
-    deleteProduct("companyA");
-  });
+//   // Attach delete button event listeners
+//   $("#deleteProductA").on("click", function () {
+//     deleteProduct("companyA");
+//   });
 
-  $("#deleteProductB").on("click", function () {
-    deleteProduct("companyB");
-  });
-});
+//   $("#deleteProductB").on("click", function () {
+//     deleteProduct("companyB");
+//   });
+// });
 
-// Wait for the DOM to load
-document.addEventListener("DOMContentLoaded", function () {
-  const modal = document.getElementById("productModal");
-  const openModalBtn = document.getElementById("openProductModal");
-  const closeModalBtn = document.querySelector(".close");
+// // Wait for the DOM to load
+// document.addEventListener("DOMContentLoaded", function () {
+//   const modal = document.getElementById("productModal");
+//   const openModalBtn = document.getElementById("openProductModal");
+//   const closeModalBtn = document.querySelector(".close");
 
-  openModalBtn.addEventListener("click", () => modal.style.display = "block");
-  closeModalBtn.addEventListener("click", () => modal.style.display = "none");
+//   openModalBtn.addEventListener("click", () => modal.style.display = "block");
+//   closeModalBtn.addEventListener("click", () => modal.style.display = "none");
 
-  window.addEventListener("click", (event) => {
-    if (event.target === modal) {
-      modal.style.display = "none";
-    }
-  });
-});
+//   window.addEventListener("click", (event) => {
+//     if (event.target === modal) {
+//       modal.style.display = "none";
+//     }
+//   });
+// });
 
-// Renaming productData to avoid conflicts
-let newProductData = {
-  companyA: {},
-  companyB: {},
-};
-
-
-function addNewProduct(company) {
-  const modal = document.getElementById("productModal");
-  let productEng = document.getElementById("newProductEng").value.trim();
-  let productTh = document.getElementById("newProductTh").value.trim();
-  let barcode = document.getElementById("newBarcode").value.trim();
-  let mfg = document.getElementById("newMfg").value.trim();
-  let lot = document.getElementById("newLot").value.trim();
-  let exp = document.getElementById("newExp").value.trim();
-  let unit = document.getElementById("newUnit").value.trim();
-
-  if (!productEng || !productTh || !barcode || !mfg || !lot || !exp || !unit) {
-    alert("Please fill all fields!");
-    return;
-  }
-
-  // Ensure productData is initialized for the company
-  if (!productData[company]) {
-    productData[company] = {};
-  }
-
-  // Store the product data properly
-  productData[company][productEng] = {
-    productNameTh: productTh,
-    barcode: barcode,
-    mfg: mfg,
-    lot: lot,
-    exp: exp,
-    unit: unit,
-  };
-
-  console.log(`Product added to ${company}:`, productData[company]);
-
-  // Store the updated productData in localStorage to keep data after refresh
-  localStorage.setItem("productData", JSON.stringify(productData));
-
-  // Clear input fields
-  document.getElementById("newProductEng").value = "";
-  document.getElementById("newProductTh").value = "";
-  document.getElementById("newBarcode").value = "";
-  document.getElementById("newMfg").value = "";
-  document.getElementById("newLot").value = "";
-  document.getElementById("newExp").value = "";
-  document.getElementById("newUnit").value = "";
-
-  // Close modal after adding product
-  modal.style.display = "none";
-
-  alert(`Product added to ${company} successfully!`);
-
-  // Update the dropdown after adding a new product
-  updateProductDropdown(company);
-}
+// // Renaming productData to avoid conflicts
+// let newProductData = {
+//   companyA: {},
+//   companyB: {},
+// };
 
 
-function updateProductDropdown(company) {
-  let dropdownId = company === "companyA" ? "#productNameEngA" : "#productNameB";
-  let selectize = $(dropdownId)[0].selectize;
+// function addNewProduct(company) {
+//   const modal = document.getElementById("productModal");
+//   let productEng = document.getElementById("newProductEng").value.trim();
+//   let productTh = document.getElementById("newProductTh").value.trim();
+//   let barcode = document.getElementById("newBarcode").value.trim();
+//   let mfg = document.getElementById("newMfg").value.trim();
+//   let lot = document.getElementById("newLot").value.trim();
+//   let exp = document.getElementById("newExp").value.trim();
+//   let unit = document.getElementById("newUnit").value.trim();
 
-  // Clear the existing dropdown options
-  selectize.clearOptions();
+//   if (!productEng || !productTh || !barcode || !mfg || !lot || !exp || !unit) {
+//     alert("Please fill all fields!");
+//     return;
+//   }
 
-  // Add new options from productData
-  Object.keys(productData[company]).forEach((product) => {
-    selectize.addOption({ value: product, text: product });
-  });
+//   // Ensure productData is initialized for the company
+//   if (!productData[company]) {
+//     productData[company] = {};
+//   }
 
-  // Refresh the dropdown
-  selectize.refreshOptions();
-}
+//   // Store the product data properly
+//   productData[company][productEng] = {
+//     productNameTh: productTh,
+//     barcode: barcode,
+//     mfg: mfg,
+//     lot: lot,
+//     exp: exp,
+//     unit: unit,
+//   };
+
+//   console.log(`Product added to ${company}:`, productData[company]);
+
+//   // Store the updated productData in localStorage to keep data after refresh
+//   localStorage.setItem("productData", JSON.stringify(productData));
+
+//   // Clear input fields
+//   document.getElementById("newProductEng").value = "";
+//   document.getElementById("newProductTh").value = "";
+//   document.getElementById("newBarcode").value = "";
+//   document.getElementById("newMfg").value = "";
+//   document.getElementById("newLot").value = "";
+//   document.getElementById("newExp").value = "";
+//   document.getElementById("newUnit").value = "";
+
+//   // Close modal after adding product
+//   modal.style.display = "none";
+
+//   alert(`Product added to ${company} successfully!`);
+
+//   // Update the dropdown after adding a new product
+//   updateProductDropdown(company);
+// }
 
 
+// function updateProductDropdown(company) {
+//   let dropdownId = company === "companyA" ? "#productNameEngA" : "#productNameB";
+//   let selectize = $(dropdownId)[0].selectize;
 
+//   // Clear the existing dropdown options
+//   selectize.clearOptions();
+
+//   // Add new options from productData
+//   Object.keys(productData[company]).forEach((product) => {
+//     selectize.addOption({ value: product, text: product });
+//   });
+
+//   // Refresh the dropdown
+//   selectize.refreshOptions();
+// }
 
 
 
+// //delete product function
 
-//delete product function
+// function deleteProduct() {
+//   // Get selected products
+//   const companyAProduct = document.getElementById("productNameEngA").value;
+//   const companyBProduct = document.getElementById("productNameB").value;
 
-function deleteProduct() {
-  // Get selected products
-  const companyAProduct = document.getElementById("productNameEngA").value;
-  const companyBProduct = document.getElementById("productNameB").value;
+//   if (!companyAProduct && !companyBProduct) {
+//     alert("Please select a product to delete.");
+//     return;
+//   }
 
-  if (!companyAProduct && !companyBProduct) {
-    alert("Please select a product to delete.");
-    return;
-  }
+//   let confirmDelete = confirm("Are you sure you want to delete this product?");
+//   if (!confirmDelete) return;
 
-  let confirmDelete = confirm("Are you sure you want to delete this product?");
-  if (!confirmDelete) return;
+//   // Delete from company A if selected
+//   if (companyAProduct && productData.companyA[companyAProduct]) {
+//     delete productData.companyA[companyAProduct];
+//     removeOptionFromDropdown("productNameEngA", companyAProduct);
+//   }
 
-  // Delete from company A if selected
-  if (companyAProduct && productData.companyA[companyAProduct]) {
-    delete productData.companyA[companyAProduct];
-    removeOptionFromDropdown("productNameEngA", companyAProduct);
-  }
+//   // Delete from company B if selected
+//   if (companyBProduct && productData.companyB[companyBProduct]) {
+//     delete productData.companyB[companyBProduct];
+//     removeOptionFromDropdown("productNameB", companyBProduct);
+//   }
 
-  // Delete from company B if selected
-  if (companyBProduct && productData.companyB[companyBProduct]) {
-    delete productData.companyB[companyBProduct];
-    removeOptionFromDropdown("productNameB", companyBProduct);
-  }
+//   alert("Product deleted successfully.");
+// }
 
-  alert("Product deleted successfully.");
-}
-
-// Helper function to remove option from dropdown
-function removeOptionFromDropdown(selectId, productValue) {
-  let selectElement = document.getElementById(selectId);
-  for (let i = 0; i < selectElement.options.length; i++) {
-    if (selectElement.options[i].value === productValue) {
-      selectElement.remove(i);
-      break;
-    }
-  }
-}
-
-
-
+// // Helper function to remove option from dropdown
+// function removeOptionFromDropdown(selectId, productValue) {
+//   let selectElement = document.getElementById(selectId);
+//   for (let i = 0; i < selectElement.options.length; i++) {
+//     if (selectElement.options[i].value === productValue) {
+//       selectElement.remove(i);
+//       break;
+//     }
+//   }
+// }
