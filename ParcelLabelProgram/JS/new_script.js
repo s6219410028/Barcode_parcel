@@ -485,8 +485,8 @@ $(document).ready(function () {
 
 // Sample company data
 const companyData = [
-  { id:companyA, name: "companyA" },
-  { id:companyB, name: "CompanyB" },
+  { id: companyA, name: "companyA" },
+  { id: companyB, name: "CompanyB" },
 ];
 
 // Open the modal when the button is clicked
@@ -548,3 +548,84 @@ const SUPABASE_URL = 'https://cqdhhmolqaqbalapevnw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M';
 
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+
+// Store Data (Insert):
+async function insertData(name, description) {
+  const { error } = await supabase
+    .from('items')
+    .insert([{ name: name, description: description }]);
+
+  if (error) {
+    console.error('Error inserting data:', error);
+  } else {
+    console.log('Data inserted successfully!');
+  }
+}
+
+// Example usage:
+insertData('Example Item', 'This is an example description.');
+
+
+//Retrieve Data (Select):
+
+async function fetchData() {
+  const { data, error } = await supabase.from('items').select('*');
+
+  if (error) {
+    console.error('Error fetching data:', error);
+  } else {
+    console.log('Fetched data:', data);
+    // Process the retrieved data (e.g., display it on your HTML page)
+    displayData(data);
+  }
+}
+
+function displayData(items) {
+  const dataContainer = document.getElementById('data-container');
+  dataContainer.innerHTML = ''; // Clear previous data
+
+  items.forEach(item => {
+    const itemElement = document.createElement('div');
+    itemElement.textContent = `Name: ${item.name}, Description: ${item.description}`;
+    dataContainer.appendChild(itemElement);
+  });
+}
+
+// Example usage:
+fetchData();
+
+
+//Update Data (Update):
+
+async function updateData(itemId, newName, newDescription) {
+  const { error } = await supabase
+      .from('items')
+      .update({name: newName, description: newDescription})
+      .eq('id', itemId);
+
+  if(error){
+      console.log("Error updating data: ", error);
+  } else {
+      console.log("data updated successfully");
+  }
+}
+//example usage:
+updateData(1, "Updated Name", "Updated description");
+
+//Delete Data (Delete):
+
+async function deleteData(itemId){
+  const {error} = await supabase
+      .from('items')
+      .delete()
+      .eq('id', itemId);
+
+  if(error){
+      console.log("Error deleting data: ", error);
+  } else {
+      console.log("Data deleted successfully");
+  }
+}
+//example usage:
+deleteData(1);

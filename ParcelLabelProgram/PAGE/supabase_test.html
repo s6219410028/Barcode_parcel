@@ -1,86 +1,127 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Form</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0-beta.4/dist/supabase.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Product Selector</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
 </head>
 <body>
+    <h2>Select a Product</h2>
+    
+    <label for="product-dropdown">Product:</label>
+    <select id="product-dropdown">
+        <option value="">Loading...</option>
+    </select>
 
-<h1>Add New Product</h1>
-<form id="product-form">
-  <label for="product_name">Product Name:</label>
-  <input type="text" id="product_name" name="product_name" required><br><br>
+    <h3>Product Details</h3>
+    <label>Product Name (English):</label>
+    <input type="text" id="product_name_eng" readonly><br>
 
-  <label for="product_description">Product Description:</label>
-  <textarea id="product_description" name="product_description" required></textarea><br><br>
+    <label>Product Name (Thai):</label>
+    <input type="text" id="product_name_th" readonly><br>
 
-  <label for="price">Price:</label>
-  <input type="number" id="price" name="price" step="0.01" required><br><br>
+    <label>Company ID:</label>
+    <input type="text" id="company_id" readonly><br>
 
-  <label for="company_id">Select Company:</label>
-  <select id="company_id" name="company_id" required>
-    <!-- Companies will be populated here -->
-  </select><br><br>
+    <label>Product Barcode:</label>
+    <input type="text" id="product_barcode" readonly><br>
 
-  <input type="submit" value="Add Product">
-</form>
+    <label>Manufacturing Date:</label>
+    <input type="text" id="product_mfg" readonly><br>
 
-<script>
-  // Initialize Supabase client
-  const supabaseUrl = 'https://YOUR-SUPABASE-URL.supabase.co';  // Replace with your Supabase URL
-  const supabaseKey = 'YOUR-SUPABASE-KEY';  // Replace with your Supabase public key
-  const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+    <label>Lot Number:</label>
+    <input type="text" id="product_lot" readonly><br>
 
-  // Get the list of companies and populate the dropdown
-  async function loadCompanies() {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('id, company_name');
+    <label>Expiration Date:</label>
+    <input type="text" id="product_exp" readonly><br>
 
-    if (error) {
-      console.error('Error fetching companies:', error);
-    } else {
-      const companySelect = document.getElementById('company_id');
-      data.forEach(company => {
-        const option = document.createElement('option');
-        option.value = company.id;
-        option.textContent = company.company_name;
-        companySelect.appendChild(option);
-      });
-    }
-  }
+    <label>Unit:</label>
+    <input type="text" id="unit" readonly><br>
 
-  // Handle form submission to add product
-  async function handleFormSubmit(event) {
-    event.preventDefault();  // Prevent the form from refreshing the page
+    <script>
+        const supabaseUrl = "https://cqdhhmolqaqbalapevnw.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M";
+        let supabase;
 
-    const productName = document.getElementById('product_name').value;
-    const productDescription = document.getElementById('product_description').value;
-    const price = parseFloat(document.getElementById('price').value);
-    const companyId = parseInt(document.getElementById('company_id').value);
+        document.addEventListener("DOMContentLoaded", async function () {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log("Supabase initialized:", supabase);
+                await populateDropdown();
+            } else {
+                console.error("Supabase library failed to load.");
+            }
+        });
 
-    const { data, error } = await supabase
-      .from('products')
-      .insert([
-        { product_name: productName, product_description: productDescription, price, company_id: companyId }
-      ]);
+        async function fetchData() {
+            const { data, error } = await supabase
+                .from("products") // ✅ Your table name
+                .select("*"); // ✅ Fetch all columns
 
-    if (error) {
-      console.error('Error adding product:', error);
-    } else {
-      alert('Product added successfully!');
-    }
-  }
+            if (error) {
+                console.error("Error fetching data:", error);
+                return [];
+            }
 
-  // Load companies when the page loads
-  window.onload = async function () {
-    await loadCompanies();
-    const form = document.getElementById('product-form');
-    form.addEventListener('submit', handleFormSubmit);
-  }
-</script>
+            console.log("Fetched Data:", data); // Debugging
+            return data;
+        }
 
+        async function populateDropdown() {
+            const dropdown = document.getElementById("product-dropdown");
+            dropdown.innerHTML = "<option value=''>Select a product</option>";
+
+            try {
+                const data = await fetchData();
+
+                if (data.length > 0) {
+                    data.forEach(row => {
+                        dropdown.innerHTML += `<option value="${row.id}">${row.product_name_eng} - ${row.product_name_th}</option>`;
+                    });
+
+                    // Store data for quick access later
+                    dropdown.dataset.products = JSON.stringify(data);
+                } else {
+                    dropdown.innerHTML = "<option value=''>No data found</option>";
+                }
+            } catch (error) {
+                console.error("Error populating dropdown:", error);
+                dropdown.innerHTML = "<option value=''>Error loading data</option>";
+            }
+        }
+
+        document.getElementById("product-dropdown").addEventListener("change", function () {
+            const selectedId = this.value;
+            const products = JSON.parse(this.dataset.products || "[]");
+
+            // Find selected product
+            const selectedProduct = products.find(p => p.id == selectedId);
+
+            if (selectedProduct) {
+                document.getElementById("product_name_eng").value = selectedProduct.product_name_eng || "";
+                document.getElementById("product_name_th").value = selectedProduct.product_name_th || "";
+                document.getElementById("company_id").value = selectedProduct.company_id || "";
+                document.getElementById("product_barcode").value = selectedProduct.product_barcode || "";
+                document.getElementById("product_mfg").value = selectedProduct.product_mfg || "";
+                document.getElementById("product_lot").value = selectedProduct.product_lot || "";
+                document.getElementById("product_exp").value = selectedProduct.product_exp || "";
+                document.getElementById("unit").value = selectedProduct.unit || "";
+            } else {
+                clearFields();
+            }
+        });
+
+        function clearFields() {
+            document.getElementById("product_name_eng").value = "";
+            document.getElementById("product_name_th").value = "";
+            document.getElementById("company_id").value = "";
+            document.getElementById("product_barcode").value = "";
+            document.getElementById("product_mfg").value = "";
+            document.getElementById("product_lot").value = "";
+            document.getElementById("product_exp").value = "";
+            document.getElementById("unit").value = "";
+        }
+    </script>
 </body>
 </html>

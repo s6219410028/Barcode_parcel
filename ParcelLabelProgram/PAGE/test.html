@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Supabase Data Dropdown</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+</head>
+<body>
+    <h2>Select a Product</h2>
+    <select id="product-dropdown">
+        <option value="">Loading...</option>
+    </select>
+
+    <script>
+        const supabaseUrl = "https://cqdhhmolqaqbalapevnw.supabase.co";
+        const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M";
+        let supabase;
+
+        document.addEventListener("DOMContentLoaded", async function () {
+            if (window.supabase) {
+                supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+                console.log("Supabase initialized:", supabase);
+                await populateDropdown();
+            } else {
+                console.error("Supabase library failed to load.");
+            }
+        });
+
+        async function fetchData() {
+            const { data, error } = await supabase
+                .from("products") // ✅ Change to your actual table name
+                .select("*"); // ✅ Fetch all columns
+
+            if (error) {
+                console.error("Error fetching data:", error);
+                return [];
+            }
+
+            console.log("Fetched Data:", data); // 🔍 Debug: Check the fetched data structure
+            return data;
+        }
+
+        async function populateDropdown() {
+            const dropdown = document.getElementById("product-dropdown");
+            dropdown.innerHTML = "<option value=''>Select a product</option>";
+
+            try {
+                const data = await fetchData();
+
+                if (data.length > 0) {
+                    // Dynamically detect the correct column names
+                    const firstRow = data[0];
+                    console.log("First Row Structure:", firstRow); // 🔍 Debug: See what fields exist
+                    
+                    const valueField = Object.keys(firstRow)[0]; // Assume first column is ID
+                    const nameField = Object.keys(firstRow).find(key => key.toLowerCase().includes("name")) || valueField; // Try to find a name-like field
+
+                    console.log("Using Fields:", { valueField, nameField }); // 🔍 Debug: See which fields were chosen
+
+                    data.forEach(row => {
+                        dropdown.innerHTML += `<option value="${row[valueField]}">${row[nameField]}</option>`;
+                    });
+                } else {
+                    dropdown.innerHTML = "<option value=''>No data found</option>";
+                }
+            } catch (error) {
+                console.error("Error populating dropdown:", error);
+                dropdown.innerHTML = "<option value=''>Error loading data</option>";
+            }
+        }
+    </script>
+</body>
+</html>
