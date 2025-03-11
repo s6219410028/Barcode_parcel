@@ -200,3 +200,8 @@ select {
   width: 100%;
   box-sizing: border-box;
 }
+
+@media print {
+  .no-print { display: none !important; }
+}
+

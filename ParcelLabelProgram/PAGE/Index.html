@@ -1,781 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
+<head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parcel Label</title>
     <link rel="stylesheet" href="/ParcelLabelProgram/CSS/styles.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css" />
 
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css"
-    />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
 
-    <style>
-      .form-container {
-        display: grid;
-        grid-template-columns: auto auto;
-        gap: 10px;
-        max-width: 400px;
-      }
-    </style>
-  </head>
-  <body>
-    <br />
     <h2 style="text-align: center">Parcel Label Generator</h2>
-    <br />
     <hr />
+
     <h2 style="text-align: center">CP ALL Barcode Label</h2>
     <div class="input-container" id="companyAForm">
-      <div style="margin-bottom: 10px">
-        <label for="companyNameA">Company Name:</label>
-        <select id="companyNameA" disabled>
-          <option value="บริษัท CP ALL">บริษัท CP ALL</option>
-        </select>
-      </div>
-      <label for="productNameEngA">Product Name (Eng):</label>
-      <select
-        id="productNameEngA"
-        onchange="updateDropdown('companyA', this.value)"
-      >
-        <option value="">Select Product (Eng)</option>
-        <option value="Iyara AEC Syrup-Red 7-11">
-          Iyara AEC Syrup-Red 7-11
-        </option>
-        <!-- <option value="product2A">Product B (Eng)</option>
-        <option value="product3A">Product C (Eng)</option> -->
-      </select>
-      <label for="productNameThA">Product Name (Thai):</label>
-      <select id="productNameThA">
-        <option value="">Select Product (Thai)</option>
-        <option value="มะแว้ง-เออีซี ไอยราแดง 7-11">
-          มะแว้ง-เออีซี ไอยราแดง 7-11
-        </option>
-        <!-- <option value="ยาแก้ไอ">ยาแก้ไอ</option>
-        <option value="ยาแก้ท้องเสีย">ยาแก้ท้องเสีย</option> -->
-      </select>
-      <label for="barcodeA">Barcode:</label>
-      <select id="barcodeA">
-        <option value="">Select Barcode</option>
-        <option value="*8856513009380*">*8856513009380*</option>
-        <!-- <option value="*654684641515*">*654684641515*</option>
-        <option value="*5646149923*">*5646149923*</option> -->
-      </select>
-      <label for="mfgA">MFG:</label>
-      <select id="mfgA">
-        <option value="">Select MFG</option>
-        <option value=".16-01-25.">.16-01-25.</option>
-        <!-- <option value="17-02-26">17-02-26</option>
-        <option value="18-03-27">18-03-27</option> -->
-      </select>
-      <label for="lotA">LOT:</label>
-      <select id="lotA">
-        <option value="">Select LOT</option>
-        <option value="2066803">2066803</option>
-        <!-- <option value="2066804">2066804</option>
-        <option value="2066805">2066805</option> -->
-      </select>
-      <label for="expA">EXP:</label>
-      <select id="expA">
-        <option value="">Select EXP</option>
-        <option value="22-02-27">22-02-27</option>
-        <!-- <option value="23-03-28">23-03-28</option>
-        <option value="24-04-29">24-04-29</option> -->
-      </select>
-      <label for="unitA">UNIT:</label>
-      <select id="unitA">
-        <option value="">Select UNIT</option>
-        <option value="24x6x60cc.">24x6x60cc.</option>
-        <!-- <option value="30x8x70cc">30x8x70cc</option>
-        <option value="36x10x80cc">36x10x80cc</option> -->
-      </select>
-      <button onclick="printTable('companyA')">Print Label (Company A)</button>
+        <div style="margin-bottom: 10px">
+            <label for="companyNameA">Company Name:</label>
+            <select id="companyNameA" disabled>
+                <option value="บริษัท CP ALL">บริษัท CP ALL</option>
+            </select>
+        </div>
+
+        <label for="productNameEngA">Product Name (Eng):</label>
+        <select id="productNameEngA" onchange="updateDropdown('companyA', this.value)"></select>
+
+        <label for="productNameThA">Product Name (Thai):</label>
+        <input type="text" id="productNameThA" readonly>
+
+        <label for="barcodeA">Barcode:</label>
+        <input type="text" id="barcodeA" readonly>
+
+        <label for="mfgA">MFG:</label>
+        <input type="text" id="mfgA" readonly>
+
+        <label for="lotA">LOT:</label>
+        <input type="text" id="lotA" readonly>
+
+        <label for="expA">EXP:</label>
+        <input type="text" id="expA" readonly>
+
+        <label for="unitA">UNIT:</label>
+        <input type="text" id="unitA" readonly>
+
+        <button onclick="printTable('companyA')">Print Label (Company A)</button>
     </div>
 
-    <br />
     <hr />
-    <br />
 
     <h2 style="text-align: center">บริษัท เอ็กซ์เพรสเมด จำกัด Barcode Label</h2>
     <div class="input-container" id="companyBForm">
-      <div style="margin-bottom: 10px">
-        <label for="companyNameB">Company Name:</label>
-        <select id="companyNameB" disabled>
-          <option value="บริษัท เอ็กซ์เพรสเมด จำกัด">
-            บริษัท เอ็กซ์เพรสเมด จำกัด
-          </option>
-        </select>
-      </div>
-      <label for="productNameB">Product Name :</label>
-      <select
-        id="productNameB"
-        onchange="updateDropdown('companyB', this.value)"
-      >
-        <option value="">Select Product (Eng)</option>
-        <option value="product1B">ไวตามินซี รสส้ม</option>
-        <option value="product2B">ไวตามินซี รสสัปปะรด</option>
-        <option value="product3B">
-          ยาน้ำแก้ไอมะแว้ง ตราไอยรา เออีซี 60 cc
-        </option>
-        <option value="product4B">น๊อก-คูล เจล</option>
-        <option value="product5B">โพลาร์ สเปรย์</option>
-        <option value="product6B">ม็อซซี่การ์ด สเปรย์</option>
-        <option value="product7B">ม็อซซี่การ์ด</option>
-        <option value="product8B">ด็อกเตอร์เทมป์-ฟ้า-เมนทอล</option>
-        <option value="product9B">ด็อกเตอร์เทมป์-ชมพู-แคนดี้</option>
-        <option value="product10B">ไวตามินซี รสองุ่น</option>
-        <option value="product11B">โพลาร์ คลีน พลัส แอลกอฮอ ซานิไทเซอ</option>
-        <option value="product12B">VITA-C Gummy Multifruit</option>
-        <option value="product13B">Vita-C Berry Gummy</option>
-        <option value="product14B">CAL-UPS-CHOCO</option>
-        <option value="product15B">SIPRA SERUM (1x12x3ML)</option>
-        <option value="product16B">Wobbler Sipra</option>
-        <option value="product17B">Counter Stand Sipra</option>
-        <option value="product18B">Propoliz Lozenge Plus (1x10x8's)</option>
-        <option value="product19B">NOX-PAIN CREAM</option>
-        <option value="product20B">Propoliz Mouth Spray (1x6x10ml)</option>
-        <option value="product21B">
-          Propoliz Krachai Mouth Spray(1x3x15ml)
-        </option>
-        <option value="product22B">Luteina Capsule Sachet (1x10x6's)</option>
-        <option value="product23B">Propoliz mouth Spray (1x3x15ml)</option>
-        <option value="product24B">Iyara Triphala(1x10x8's)</option>
-        <option value="product25B">Vita-c Jelly Strip Orange(1x10x15g.)</option>
-        <option value="product26B">Vita-c chewy(1x20x17.5g.)</option>
-        <option value="product27B">
-          Propoliz Lozenge vitamin c citrus (1x10x8's)
-        </option>
-        <option value="product28B">ไวตามินซี รสสตอเบอร์รี่</option>
-      </select>
-      <label for="productNameThB">Product Name (Thai):</label>
-      <select id="productNameThB">
-        <option value="">Select Product (Thai)</option>
-        <option value="ไวตามินซี รสส้ม">ไวตามินซี รสส้ม</option>
-        <option value="ไวตามินซี รสสัปปะรด">ไวตามินซี รสสัปปะรด</option>
-        <option value="ยาน้ำแก้ไอมะแว้ง ตราไอยรา เออีซี 60 cc">
-          ยาน้ำแก้ไอมะแว้ง ตราไอยรา เออีซี 60 cc
-        </option>
-        <option value="น๊อก-คูล เจล">น๊อก-คูล เจล</option>
-        <option value="โพลาร์  สเปรย์">โพลาร์ สเปรย์</option>
-        <option value="ม็อซซี่การ์ด สเปรย์">ม็อซซี่การ์ด สเปรย์</option>
-        <option value="ม็อซซี่การ์ด">ม็อซซี่การ์ด</option>
-        <option value="ด็อกเตอร์เทมป์-ฟ้า-เมนทอล">
-          ด็อกเตอร์เทมป์-ฟ้า-เมนทอล
-        </option>
-        <option value="ด็อกเตอร์เทมป์-ชมพู-แคนดี้">
-          ด็อกเตอร์เทมป์-ชมพู-แคนดี้
-        </option>
-        <option value="ไวตามินซี รสองุ่น">ไวตามินซี รสองุ่น</option>
-        <option value="โพลาร์ คลีน พลัส แอลกอฮอ ซานิไทเซอ">
-          โพลาร์ คลีน พลัส แอลกอฮอ ซานิไทเซอ
-        </option>
-        <option value="VITA-C Gummy Multifruit">VITA-C Gummy Multifruit</option>
-        <option value="Vita-C Berry Gummy">Vita-C Berry Gummy</option>
-        <option value="CAL-UPS-CHOCO">CAL-UPS-CHOCO</option>
-        <option value="SIPRA SERUM (1x12x3ML)">SIPRA SERUM (1x12x3ML)</option>
-        <option value="Wobbler Sipra">Wobbler Sipra</option>
-        <option value="Counter Stand Sipra">Counter Stand Sipra</option>
-        <option value="Propoliz Lozenge Plus (1x10x8's)">
-          Propoliz Lozenge Plus (1x10x8's)
-        </option>
-        <option value="NOX-PAIN CREAM">NOX-PAIN CREAM</option>
-        <option value="Propoliz Mouth Spray (1x6x10ml)">
-          Propoliz Mouth Spray (1x6x10ml)
-        </option>
-        <option value="Propoliz Krachai Mouth Spray(1x3x15ml)">
-          Propoliz Krachai Mouth Spray(1x3x15ml)
-        </option>
-        <option value="Luteina Capsule Sachet (1x10x6's)">
-          Luteina Capsule Sachet (1x10x6's)
-        </option>
-        <option value="Propoliz mouth Spray (1x3x15ml)">
-          Propoliz mouth Spray (1x3x15ml)
-        </option>
-        <option value="Iyara Triphala(1x10x8's)">
-          Iyara Triphala(1x10x8's)
-        </option>
-        <option value="Vita-c Jelly Strip Orange(1x10x15g.)">
-          Vita-c Jelly Strip Orange(1x10x15g.)
-        </option>
-        <option value="Vita-c chewy(1x20x17.5g.)">
-          Vita-c chewy(1x20x17.5g.)
-        </option>
-        <option value="Propoliz Lozenge vitamin c citrus (1x10x8's)">
-          Propoliz Lozenge vitamin c citrus (1x10x8's)
-        </option>
-        <option value="ไวตามินซี รสสตอเบอร์รี่">ไวตามินซี รสสตอเบอร์รี่</option>
-      </select>
+        <div style="margin-bottom: 10px">
+            <label for="companyNameB">Company Name:</label>
+            <select id="companyNameB" disabled>
+                <option value="บริษัท เอ็กซ์เพรสเมด จำกัด">บริษัท เอ็กซ์เพรสเมด จำกัด</option>
+            </select>
+        </div>
 
-      <label for="barcodeB">Barcode:</label>
-      <select id="barcodeB">
-        <option value="">Select Barcode</option>
-        <option value="*885613009588*">*885613009588*</option>
-        <option value="*8856513009595*">*8856513009595</option>
-        <option value="*8856513009380*">*8856513009380*</option>
-        <option value="*8856513010348*">*8856513010348*</option>
-        <option value="*8856513009120*">*8856513009120*</option>
-        <option value="*8856513009151*">*8856513009151*</option>
-        <option value="*8856513009144*">*8856513009144*</option>
-        <option value="*8856513010317*">*8856513010317*</option>
-        <option value="*8856513010294*">*8856513010294*</option>
-        <option value="*8856513004743*">*8856513004743*</option>
-        <option value="*8856513010959*">*8856513010959*</option>
-        <option value="*8856513009403*">*8856513009403*</option>
-        <option value="*8856513009397*">*8856513009397*</option>
-        <option value="*8857121535735*">*8857121535735*</option>
-        <option value="*8856513010744*">*8856513010744*</option>
-        <option value="*9999990178270*">*9999990178270*</option>
-        <option value="*9999990178258*">*9999990178258*</option>
-        <option value="*8856513011208*">*8856513011208*</option>
-        <option value="*8856513004064*">*8856513004064*</option>
-        <option value="*8856513009410*">*8856513009410*</option>
-        <option value="*8856513012144*">*8856513012144*</option>
-        <option value="*8856513011185*">*8856513011185*</option>
-        <option value="*8857121535131*">*8857121535131*</option>
-        <option value="*8856513012915*">*8856513012915*</option>
-        <option value="*8856513013103*">*8856513013103*</option>
-        <option value="*8856513013530*">*8856513013530*</option>
-        <option value="*8856513013967*">*8856513013967*</option>
-        <option value="*8856513014117*">*8856513014117*</option>
-      </select>
-      <label for="mfgB">MFG:</label>
-      <select id="mfgB">
-        <option value="">Select MFG</option>
-        <option value=".04-01-24.">.04-01-24.</option>
-        <option value=".07-06-19.">.07-06-19.</option>
-        <option value=".08/05/19.">.08/05/19.</option>
-        <option value=".20-01-22.">.20-01-22.</option>
-        <option value=".08-03-19.">.08-03-19.</option>
-        <option value=".16-08-19.">.16-08-19.</option>
-        <option value=""></option>
-        <option value=""></option>
-        <option value=""></option>
-        <option value=".23-09-23.">.23-09-23.</option>
-        <option value=".10-04-20.">.10-04-20.</option>
-        <option value=".13-12-23.">.12-06-23.</option>
-        <option value=".13-12-23.">.12-06-23.</option>
-        <option value=".15-03-21.">.15-03-21.</option>
-        <option value=".29-08-2022.">.29-08-2022.</option>
-        <option value="..">..</option>
-        <option value="..">..</option>
-        <option value=".13-03-24.">.13-03-24.</option>
-        <option value=".08-09-21.">.08-09-21.</option>
-        <option value=".07-04-22.">.07-04-22.</option>
-        <option value=".16-02-24.">.16-02-24.</option>
-        <option value=".09-08-22.">.09-08-22.</option>
-        <option value=".05-03-24.">.05-03-24.</option>
-        <option value=".27-01-24.">.27-01-24.</option>
-        <option value=".22-02-24.">.22-02-24.</option>
-        <option value=".24-12-23.">.23-06-23.</option>
-        <option value=".16-03-24.">.16-03-24.</option>
-        <option value=".07-10-23.">.07-10-23.</option>
-      </select>
-      <label for="lotB">LOT:</label>
-      <select id="lotB">
-        <option value="">Select LOT</option>
-        <option value=".266704.">.266704.</option>
-        <option value=".256240.">.256240.</option>
-        <option value=".2066203.">.2066203.</option>
-        <option value=".1-6501.">.1-6501.</option>
-        <option value=".1902050.">.1902050.</option>
-        <option value=".1-6204.">.1-6204.</option>
-        <option value=".20190830.">.20190830.</option>
-        <option value=".20190830.">.20190830.</option>
-        <option value=".20190315.">.20190315.</option>
-        <option value=".3066110.">.3066110.</option>
-        <option value=".3066308.">.3066308.</option>
-        <option value=".23017.">.23017.</option>
-        <option value=".23017.">.23017.</option>
-        <option value=".296402.">.296402.</option>
-        <option value=".SPS6505.">.SPS6505.</option>
-        <option value=""></option>
-        <option value=""></option>
-        <option value=".130326.">.130326.</option>
-        <option value=".136409.">.136409.</option>
-        <option value=".16532.">.16532.</option>
-        <option value=".PKM6704.">.PKM6704.</option>
-        <option value=".376502.">.376502.</option>
-        <option value=".16730.">.16730.</option>
-        <option value=".270126.">.270126.</option>
-        <option value=".766711.">.766711.</option>
-        <option value=".23016.">.23016.</option>
-        <option value=".160326.">.160326.</option>
-        <option value=".336640.">.336640.</option>
-      </select>
-      <label for="expB">EXP:</label>
-      <select id="expB">
-        <option value="">Select EXP</option>
-        <option value=".04-01-28.">.04-01-28.</option>
-        <option value=".07-06-23.">.07-06-23.</option>
-        <option value=".08/05/22.">.08/05/22.</option>
-        <option value=".20-01-25.">.20-01-25.</option>
-        <option value=".."></option>
-        <option value=".16-08-22.">16-08-22</option>
-        <option value=".29-08-22">.29-08-22.</option>
-        <option value=".29-08-22">.29-08-22.</option>
-        <option value=".14/03/22.">.14/03/22.</option>
-        <option value=".23-09-27.">.23-09-27.</option>
-        <option value=".10-04-23.">.10-04-23.</option>
-        <option value=".12-06-25.">.12-06-25.</option>
-        <option value=".12-06-25.">.12-06-25.</option>
-        <option value=".15-03-25.">.15-03-25.</option>
-        <option value=".29-08-25.">.29-08-25.</option>
-        <option value="..">..</option>
-        <option value="..">..</option>
-        <option value=".13-03-26.">.13-03-26.</option>
-        <option value=".08-09-25.">.08-09-25.</option>
-        <option value=".07-04-25.">.07-04-25.</option>
-        <option value=".16-02-27.">.16-02-27.</option>
-        <option value=".09-08-26.">.09-08-26.</option>
-        <option value=".05-03-27.">.05-03-27.</option>
-        <option value=".27-01-26.">.27-01-26.</option>
-        <option value=".22-02-26.">.22-02-26.</option>
-        <option value=".24-12-25.">.23-06-25.</option>
-        <option value=".16-03-26.">.16-03-26.</option>
-        <option value=".07-10-27.">.07-10-27.</option>
-      </select>
-      <label for="unitB">UNIT:</label>
-      <select id="unitB">
-        <option value="">Select UNIT</option>
-        <option value=".30x25x30's.">.30x25x30's.</option>
-        <option value=".30x25x30's.">.30x25x30's.</option>
-        <option value=".12x12x60cc.">.12x12x60cc.</option>
-        <option value=".5x6x25กรัม.">.5x6x25กรัม.</option>
-        <option value=".48x80ml.">.48x80ml.</option>
-        <option value=".10x3x60ml.">.10x3x60ml.</option>
-        <option value=".20x30x1ซอง.">.20x30x1ซอง.</option>
-        <option value=".50x6x1ซอง.">.50x6x1ซอง.</option>
-        <option value=".20x6x1ซอง.">.20x6x1ซอง.</option>
-        <option value=".30x25x30's.">.30x25x30's.</option>
-        <option value=".1x12x15ml.">.1x12x15ml.</option>
-        <option value=".12x24x20g.">.12x24x20g.</option>
-        <option value=".12x24x20g.">.2x24x20g.</option>
-        <option value=".8x50x15's.">.8x50x15's.</option>
-        <option value=".11x12x3ml.">.11x12x3ml.</option>
-        <option value=".600ชิ้น.">.600ชิ้น.</option>
-        <option value=".600ชิ้น.">.600ชิ้น.</option>
-        <option value=".24x10x8's.">.24x10x8's.</option>
-        <option value=".20x12x25g.">.20x12x25g.</option>
-        <option value=".21x6x10ml.">.21x6x10ml.</option>
-        <option value=".10x3x15.">.10x3x15.</option>
-        <option value=".20x10x6's.">.20x10x6's.</option>
-        <option value=".40x3x15ml.">.40x3x15ml.</option>
-        <option value=".12x10x8's.">.12x10x8's.</option>
-        <option value=".30x10x15g.">.30x10x15g.</option>
-        <option value=".12x20x17.5g.">.12x20x17.5g.</option>
-        <option value=".12x10x8's.">.12x10x8's.</option>
-        <option value=".30x25x30's.">.30x25x30's.</option>
-      </select>
-      <button onclick="printTable('companyB')">Print Label (Company B)</button>
+        <label for="productNameEngB">Product Name (Eng):</label>
+        <select id="productNameEngB" onchange="updateDropdown('companyB', this.value)"></select>
+
+        <label for="productNameThB">Product Name (Thai):</label>
+        <input type="text" id="productNameThB" readonly>
+
+        <label for="barcodeB">Barcode:</label>
+        <input type="text" id="barcodeB" readonly>
+
+        <label for="mfgB">MFG:</label>
+        <input type="text" id="mfgB" readonly>
+
+        <label for="lotB">LOT:</label>
+        <input type="text" id="lotB" readonly>
+
+        <label for="expB">EXP:</label>
+        <input type="text" id="expB" readonly>
+
+        <label for="unitB">UNIT:</label>
+        <input type="text" id="unitB" readonly>
+
+        <button onclick="printTable('companyB')">Print Label (Company B)</button>
     </div>
 
     <br />
-    <br />
 
-    <table id="tocTable">
-      <thead>
-        <tr>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <div style="text-align: center;">
+      <label for="printCountGeneral">Labels per page:</label>
+      <input type="number" id="printCountGeneral" value="1" min="1">
+      <button onclick="previewLabels(['companyA', 'companyB'])">Print All Labels</button>
+  </div>
 
-    <div style="margin-top: 10px; text-align: center">
-      <label for="printCountGeneral">Labels per page (1-3):</label>
-      <input type="number" id="printCountGeneral" value="1" min="1" max="3" />
-      <button
-        onclick="printAllTables()"
-        style="width: 150px; height: 40px; border: 2px solid black;"
-      >
-        Print All Labels
-      </button>
-    </div>
-    <br />
-    <br />
-    <hr />
-    <br />
-    <br />
-
-    <!-- 
-    <div style="text-align: center">
-      <button id="openProductModal">Add New Product</button>
-      <button id="deleteProductA">Delete Selected Product (Company A)</button>
-      <button id="deleteProductB">Delete Selected Product (Company B)</button>
-    </div>
-
-
-    <div id="productModal" class="modal">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h3>Add New Product</h3>
-
-        <label for="newProductEng">Product Name (Eng):</label>
-        <input type="text" id="newProductEng" />
-
-        <label for="newProductTh">Product Name (Thai):</label>
-        <input type="text" id="newProductTh" />
-
-        <label for="newBarcode">Barcode:</label>
-        <input type="text" id="newBarcode" />
-
-        <label for="newMfg">MFG:</label>
-        <input type="text" id="newMfg" />
-
-        <label for="newLot">LOT:</label>
-        <input type="text" id="newLot" />
-
-        <label for="newExp">EXP:</label>
-        <input type="text" id="newExp" />
-
-        <label for="newUnit">UNIT:</label>
-        <input type="text" id="newUnit" />
-
-        <button onclick="addNewProduct('companyA')">Add to CP ALL</button>
-        <button onclick="addNewProduct('companyB')">Add to ExpressMed</button>
-      </div>
-    </div> -->
-
-    <br /><br />
-
-    <!-- Modal Button to Open Modal -->
-    <button id="openModalBtn">Open Modal</button>
-
-    <!-- Modal -->
-    <div id="modal" class="modal">
-      <div class="modal-content">
-        <span class="close-btn">&times;</span>
-
-        <h2>Enter Product Details</h2>
-
-        <!-- Form Inside Modal -->
-        <form id="productForm">
-          <label for="companyName">Company Name:</label>
-          <input
-            type="text"
-            id="companyName"
-            name="companyName"
-            list="companyList"
-            placeholder="Enter company name or select from list"
-            required
-          />
-
-          <!-- Dropdown list for suggestions -->
-          <datalist id="companyList">
-            <!-- Options will be dynamically populated -->
-          </datalist>
-
-          <label for="productNameEng">Product Name (ENG):</label>
-          <input
-            type="text"
-            id="productNameEng"
-            name="productNameEng"
-            required
-          />
-
-          <label for="productNameTh">Product Name (TH):</label>
-          <input type="text" id="productNameTh" name="productNameTh" required />
-
-          <label for="barcode">Barcode:</label>
-          <input type="text" id="barcode" name="barcode" required />
-
-          <label for="mfg">MFG Date:</label>
-          <input type="date" id="mfg" name="mfg" required />
-
-          <label for="lot">LOT:</label>
-          <input type="text" id="lot" name="lot" required />
-
-          <label for="exp">EXP Date:</label>
-          <input type="date" id="exp" name="exp" required />
-
-          <label for="unit">UNIT:</label>
-          <input type="text" id="unit" name="unit" required />
-          <br>
-          <button type="submit">Submit</button>
-        </form>
-      </div>
-    </div>
-
-    <br />
-    <br />
-    <br />
-    <br />
-    <br />
-    <script>
-      const productData = {
-        companyA: {
-          "Iyara AEC Syrup-Red 7-11": {
-            productNameThA: "มะแว้ง-เออีซี ไอยราแดง 7-11",
-            barcodeA: "*8856513009380*",
-            mfgA: ".16-01-25.",
-            lotA: "2066803",
-            expA: "22-02-27",
-            unitA: "24x6x60cc.",
-          },
-          // product2A: {
-          //   productNameThA: "ยาแก้ไอ",
-          //   barcodeA: "*654684641515*",
-          //   mfgA: "17-02-26",
-          //   lotA: "2066804",
-          //   expA: "23-03-28",
-          //   unitA: "30x8x70cc",
-          // },
-          // product3A: {
-          //   productNameThA: "ยาแก้ท้องเสีย",
-          //   barcodeA: "*5646149923*",
-          //   mfgA: "18-03-27",
-          //   lotA: "2066805",
-          //   expA: "24-04-29",
-          //   unitA: "36x10x80cc",
-          // },
-        },
-        companyB: {
-          product1B: {
-            productNameThB: "ไวตามินซี รสส้ม",
-            barcodeB: "*885613009588*",
-            mfgB: ".04-01-24.",
-            lotB: ".266704.",
-            expB: ".04-01-28.",
-            unitB: ".30x25x30's.",
-          },
-          product2B: {
-            productNameThB: "ไวตามินซี รสสัปปะรด",
-            barcodeB: "*8856513009595*",
-            mfgB: ".07-06-19.",
-            lotB: ".256240.",
-            expB: ".07-06-23.",
-            unitB: ".30x25x30's.",
-          },
-          product3B: {
-            productNameThB: "ยาน้ำแก้ไอมะแว้ง ตราไอยรา เออีซี 60 cc",
-            barcodeB: "*8856513009380*",
-            mfgB: ".08/05/19.",
-            lotB: ".2066203.",
-            expB: ".08/05/22.",
-            unitB: ".12x12x60cc.",
-          },
-          product4B: {
-            productNameThB: "น๊อก-คูล เจล",
-            barcodeB: "*8856513010348*",
-            mfgB: ".20-01-22.",
-            lotB: ".1-6501.",
-            expB: ".20-01-25.",
-            unitB: ".5x6x25กรัม.",
-          },
-          product5B: {
-            productNameThB: "โพลาร์  สเปรย์",
-            barcodeB: "*8856513009120*",
-            mfgB: ".08-03-19.",
-            lotB: ".1902050.",
-            expB: " ",
-            unitB: ".48x80ml.",
-          },
-          product6B: {
-            productNameThB: "ม็อซซี่การ์ด สเปรย์",
-            barcodeB: "*8856513009151*",
-            mfgB: ".16-08-19.",
-            lotB: ".1-6204.",
-            expB: ".16-08-22.",
-            unitB: ".10x3x60ml.",
-          },
-          product7B: {
-            productNameThB: "ม็อซซี่การ์ด",
-            barcodeB: "*8856513009144*",
-            mfgB: " ",
-            lotB: ".20190830.",
-            expB: ".29-08-22.",
-            unitB: ".20x30x1ซอง.",
-          },
-          product8B: {
-            productNameThB: "ด็อกเตอร์เทมป์-ฟ้า-เมนทอล",
-            barcodeB: "*8856513010317*",
-            mfgB: " ",
-            lotB: ".20190830.",
-            expB: ".29-08-22.",
-            unitB: ".50x6x1ซอง.",
-          },
-          product9B: {
-            productNameThB: "ด็อกเตอร์เทมป์-ชมพู-แคนดี้",
-            barcodeB: "*8856513010294*",
-            mfgB: " ",
-            lotB: ".20190315.",
-            expB: ".14/03/22.",
-            unitB: ".20x6x1ซอง.",
-          },
-          product10B: {
-            productNameThB: "ไวตามินซี รสองุ่น",
-            barcodeB: "*8856513004743*",
-            mfgB: ".23-09-23.",
-            lotB: ".3066110.",
-            expB: ".23-09-27.",
-            unitB: ".30x25x30's.",
-          },
-          product11B: {
-            productNameThB: "โพลาร์ คลีน พลัส แอลกอฮอ ซานิไทเซอ",
-            barcodeB: "*8856513010959*",
-            mfgB: ".10-04-20.",
-            lotB: ".3066308.",
-            expB: ".10-04-23.",
-            unitB: ".1x12x15ml.",
-          },
-          product12B: {
-            productNameThB: "VITA-C Gummy Multifruit",
-            barcodeB: "*8856513009403*",
-            mfgB: ".12-06-23.",
-            lotB: ".23017.",
-            expB: ".12-06-25.",
-            unitB: ".12x24x20g.",
-          },
-          product13B: {
-            productNameThB: "Vita-C Berry Gummy",
-            barcodeB: "*8856513009397*",
-            mfgB: ".12-06-23.",
-            lotB: ".23017.",
-            expB: ".12-06-25.",
-            unitB: ".12x24x20g.",
-          },
-          product14B: {
-            productNameThB: "CAL-UPS-CHOCO",
-            barcodeB: "*8857121535735*",
-            mfgB: ".15-03-21.",
-            lotB: ".296402.",
-            expB: ".15-03-25.",
-            unitB: ".8x50x15's.",
-          },
-          product15B: {
-            productNameThB: "SIPRA SERUM (1x12x3ML)",
-            barcodeB: "*8856513010744*",
-            mfgB: ".29-08-2022.",
-            lotB: ".SPS6505.",
-            expB: ".29-08-25.",
-            unitB: ".11x12x3ml.",
-          },
-          product16B: {
-            productNameThB: "Wobbler Sipra",
-            barcodeB: "*9999990178270*",
-            mfgB: " ",
-            lotB: " ",
-            expB: " ",
-            unitB: ".600ชิ้น.",
-          },
-          product17B: {
-            productNameThB: "Counter Stand Sipra",
-            barcodeB: "*9999990178258*",
-            mfgB: " ",
-            lotB: " ",
-            expB: " ",
-            unitB: ".600ชิ้น.",
-          },
-          product18B: {
-            productNameThB: "Propoliz Lozenge Plus (1x10x8's)",
-            barcodeB: "*8856513011208*",
-            mfgB: ".13-03-24.",
-            lotB: ".130326.",
-            expB: ".13-03-26.",
-            unitB: ".24x10x8's.",
-          },
-          product19B: {
-            productNameThB: "NOX-PAIN CREAM",
-            barcodeB: "*8856513004064*",
-            mfgB: ".08-09-21.",
-            lotB: ".136409.",
-            expB: ".08-09-25.",
-            unitB: ".20x12x25g.",
-          },
-          product20B: {
-            productNameThB: "Propoliz Mouth Spray (1x6x10ml)",
-            barcodeB: "*8856513009410*",
-            mfgB: ".07-04-22.",
-            lotB: ".16532.",
-            expB: ".07-04-25.",
-            unitB: ".21x6x10ml.",
-          },
-          product21B: {
-            productNameThB: "Propoliz Krachai Mouth Spray(1x3x15ml)",
-            barcodeB: "*8856513012144*",
-            mfgB: ".16-02-24.",
-            lotB: ".PKM6704.",
-            expB: ".16-02-27.",
-            unitB: ".10x3x15.",
-          },
-          product22B: {
-            productNameThB: "Luteina Capsule Sachet (1x10x6's)",
-            barcodeB: "*8856513011185*",
-            mfgB: ".09-08-22.",
-            lotB: ".376502.",
-            expB: ".09-08-26.",
-            unitB: ".20x10x6's.",
-          },
-          product23B: {
-            productNameThB: "Propoliz mouth Spray (1x3x15ml)",
-            barcodeB: "*8857121535131*",
-            mfgB: ".05-03-24.",
-            lotB: ".16730.",
-            expB: ".05-03-27.",
-            unitB: ".40x3x15ml.",
-          },
-          product24B: {
-            productNameThB: "Iyara Triphala(1x10x8's)",
-            barcodeB: "*8856513012915*",
-            mfgB: ".27-01-24.",
-            lotB: ".270126.",
-            expB: ".27-01-26.",
-            unitB: ".12x10x8's.",
-          },
-          product25B: {
-            productNameThB: "Vita-c Jelly Strip Orange(1x10x15g.)",
-            barcodeB: "*8856513013103*",
-            mfgB: ".22-02-24.",
-            lotB: ".766711.",
-            expB: ".22-02-26.",
-            unitB: ".30x10x15g.",
-          },
-          product26B: {
-            productNameThB: "Vita-c chewy(1x20x17.5g.)",
-            barcodeB: "*8856513013530*",
-            mfgB: ".23-06-23.",
-            lotB: ".23016.",
-            expB: ".24-12-25.",
-            unitB: ".12x20x17.5g.",
-          },
-          product27B: {
-            productNameThB: "Propoliz Lozenge vitamin c citrus (1x10x8's)",
-            barcodeB: "*8856513013967*",
-            mfgB: ".16-03-24.",
-            lotB: ".160326.",
-            expB: ".16-03-26.",
-            unitB: ".12x10x8's.",
-          },
-          product28B: {
-            productNameThB: "ไวตามินซี รสสตอเบอร์รี่",
-            barcodeB: "*8856513014117*",
-            mfgB: ".07-10-23.",
-            lotB: ".336640.",
-            expB: ".07-10-27.",
-            unitB: ".30x25x30's.",
-          },
-        },
-      };
-    </script>
-
-    <script src="/ParcelLabelProgram/JS/new_script.js"></script>
-  </body>
+    <script src="/ParcelLabelProgram/JS/script.js"></script>
+</body>
 </html>
