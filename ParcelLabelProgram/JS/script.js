@@ -1,77 +1,118 @@
-// ── Supabase Configuration ──
+// ================= Supabase Configuration =================
 const supabaseUrl = "https://cqdhhmolqaqbalapevnw.supabase.co";
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M"; // Replace with actual key
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M"; // Replace with your actual key
 const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-let productsData = []; // Global storage for fetched products
+let productsData = [];  // Global storage for products (for the selected company)
+let companiesData = []; // Global storage for companies
+let selectedCompanyId = null;
 
-// ================= Fetch Products from Supabase =================
-async function fetchProducts() {
-  try {
-    const { data, error } = await supabase
-      .from("products")
-      .select("company_id, product_name_eng, product_name_th, product_barcode, product_mfg, product_lot, product_exp, unit");
-
-    if (error) throw error;
-
-    console.log("Fetched Products:", data);
-    productsData = data;
-
-    // Populate dropdowns based on company_id.
-    // For Company A, we use "companyA"; for all others, we use the Company B fields.
-    populateDropdown("companyA", data.filter(p => p.company_id === 1));
-    populateDropdown("companyB", data.filter(p => p.company_id !== 1));
-  } catch (err) {
-    console.error("Error fetching data:", err);
+// ------------------ Load Companies ------------------
+async function loadCompanies() {
+  const { data, error } = await supabase
+    .from("companies")
+    .select("id, company_name")
+    .order("id", { ascending: true });
+  const companySelector = document.getElementById("companySelector");
+  companySelector.innerHTML = "<option value=''>Select Company</option>";
+  if (error) {
+    console.error("Error loading companies:", error);
+    companySelector.innerHTML = "<option value=''>Error loading companies</option>";
+    return;
   }
+  companiesData = data;
+  data.forEach(company => {
+    const option = document.createElement("option");
+    option.value = company.id;
+    option.textContent = company.company_name;
+    companySelector.appendChild(option);
+  });
 }
 
-// ================= Populate Dropdown for a Given Company =================
-function populateDropdown(company, data) {
-  // Use "A" if company is exactly "companyA", otherwise force "B" for any other company.
-  const suffix = (company === "companyA") ? "A" : "B";
+// When company is selected, load its form.
+document.getElementById("companySelector").addEventListener("change", function () {
+  const companyId = this.value;
+  loadCompanyForm(companyId);
+});
+
+// ------------------ Load Company-Specific Form ------------------
+function loadCompanyForm(companyId) {
+  selectedCompanyId = parseInt(companyId);
+  const container = document.getElementById("companyFormContainer");
+  container.innerHTML = ""; // Clear previous content
+
+  if (!companyId) return;
+
+  // Decide format: if company id equals 1 (CP ALL) use "A", otherwise use "B"
+  const suffix = (selectedCompanyId === 1) ? "A" : "B";
+  container.innerHTML = `
+    <div class="input-container">
+      <label>Selected Company: ${companiesData.find(c => c.id === selectedCompanyId).company_name}</label>
+      <label for="productNameEng${suffix}">Product Name (Eng):</label>
+      <select id="productNameEng${suffix}" onchange="updateDropdownDynamic('${suffix}', this.value)"></select>
+      <label for="productNameTh${suffix}">Product Name (Thai):</label>
+      <input type="text" id="productNameTh${suffix}" readonly />
+      <label for="barcode${suffix}">Barcode:</label>
+      <input type="text" id="barcode${suffix}" readonly />
+      <label for="mfg${suffix}">MFG:</label>
+      <input type="text" id="mfg${suffix}" readonly />
+      <label for="lot${suffix}">LOT:</label>
+      <input type="text" id="lot${suffix}" readonly />
+      <label for="exp${suffix}">EXP:</label>
+      <input type="text" id="exp${suffix}" readonly />
+      <label for="unit${suffix}">UNIT:</label>
+      <input type="text" id="unit${suffix}" readonly />
+      <button class="btn" onclick="printTableDynamic('${suffix}')">Print Label</button>
+    </div>
+  `;
+  loadProductsForCompany(selectedCompanyId, suffix);
+}
+
+// ------------------ Load Products for Selected Company ------------------
+async function loadProductsForCompany(companyId, suffix) {
+  const { data, error } = await supabase
+    .from("products")
+    .select("company_id, product_name_eng, product_name_th, product_barcode, product_mfg, product_lot, product_exp, unit")
+    .eq("company_id", companyId);
+  if (error) {
+    console.error("Error loading products:", error);
+    return;
+  }
+  productsData = data;
   const dropdown = document.getElementById(`productNameEng${suffix}`);
   dropdown.innerHTML = "<option value=''>Select Product</option>";
-
   data.forEach(product => {
-    // Use product_barcode as the option value
     dropdown.innerHTML += `<option value="${product.product_barcode}">${product.product_name_eng}</option>`;
   });
-  console.log(`Dropdown ${dropdown.id} populated:`, dropdown.innerHTML);
-
-  // Destroy previous selectize instance if exists
+  // Reinitialize selectize
   if ($(dropdown).data('selectize')) {
     $(dropdown)[0].selectize.destroy();
   }
-  // Initialize Selectize with an onChange callback that triggers updateDropdown
   $(dropdown).selectize({
     create: false,
     sortField: 'text',
     onChange: function (value) {
       if (value) {
-        updateDropdown(company, value);
+        updateDropdownDynamic(suffix, value);
       } else {
-        clearFields(company);
+        clearFieldsDynamic(suffix);
       }
     }
   });
 }
 
-// ================= Update Form Fields on Selection =================
-function updateDropdown(company, barcode) {
+// ------------------ Update Form Fields Dynamically ------------------
+function updateDropdownDynamic(suffix, barcode) {
   const product = productsData.find(p => p.product_barcode === barcode);
   if (!product) {
-    console.warn("No matching product found for barcode:", barcode);
-    clearFields(company);
+    clearFieldsDynamic(suffix);
     return;
   }
-  // Use "A" for companyA; for any other, use "B"
-  const suffix = (company === "companyA") ? "A" : "B";
   document.getElementById(`productNameTh${suffix}`).value = product.product_name_th || "";
   document.getElementById(`barcode${suffix}`).value = product.product_barcode || "";
   document.getElementById(`mfg${suffix}`).value = product.product_mfg || "";
   document.getElementById(`lot${suffix}`).value = product.product_lot || "";
-  if (company === "companyA") {
+  if (suffix === "A") {
     document.getElementById(`exp${suffix}`).value = "";
   } else {
     document.getElementById(`exp${suffix}`).value = product.product_exp || "";
@@ -79,9 +120,7 @@ function updateDropdown(company, barcode) {
   document.getElementById(`unit${suffix}`).value = product.unit || "";
 }
 
-// ================= Clear Form Fields =================
-function clearFields(company) {
-  const suffix = (company === "companyA") ? "A" : "B";
+function clearFieldsDynamic(suffix) {
   document.getElementById(`productNameTh${suffix}`).value = "";
   document.getElementById(`barcode${suffix}`).value = "";
   document.getElementById(`mfg${suffix}`).value = "";
@@ -90,21 +129,21 @@ function clearFields(company) {
   document.getElementById(`unit${suffix}`).value = "";
 }
 
-// ================= Generate Printable Table for a Label =================
+// ------------------ Generate Printable Table for a Label ------------------
 function generateTableForPrint(company, container) {
-  // Use "A" for companyA, otherwise use "B"
+  // Use format "A" for company with ID 1, otherwise use format "B"
   const suffix = (company === "companyA") ? "A" : "B";
 
-  // Get the dropdown element and selected barcode from the appropriate field
+  // Get the product selected from the corresponding product dropdown.
   const dropdown = document.getElementById(`productNameEng${suffix}`);
   const selectedBarcode = dropdown.value;
-  // Find the product by matching barcode in the global productsData
+  // Find the product in productsData by matching the barcode.
   const product = productsData.find(p => p.product_barcode === selectedBarcode);
 
-  // For Company A, we use both product_name_eng and product_name_th.
+  // Retrieve product names from the product data.
   let productNameEng = product ? product.product_name_eng : "";
   let productNameTh = product ? product.product_name_th : "";
-  // Get the values from the auto-filled fields.
+  // Get other field values.
   let barcode = document.getElementById(`barcode${suffix}`).value;
   let mfg = document.getElementById(`mfg${suffix}`).value;
   let lot = document.getElementById(`lot${suffix}`).value;
@@ -114,7 +153,7 @@ function generateTableForPrint(company, container) {
     exp = product.product_exp || "";
   }
 
-  // Create the table element.
+  // Create table element.
   const table = document.createElement('table');
   table.style.borderCollapse = 'collapse';
   table.style.width = '90%';
@@ -123,16 +162,17 @@ function generateTableForPrint(company, container) {
   const tableBody = table.createTBody();
 
   if (company === "companyA") {
-    // Company A: header "PRODUCT CODE :" left-aligned
+    // Company A Format:
+    // Row 1: "PRODUCT CODE :" (plain text header, left-aligned)
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
-    cell.innerHTML = `<h2 style="margin:0; padding:5px 0 5px 70px;">PRODUCT CODE :</h2>`;
+    cell.innerHTML = `<h2 style="margin:0; padding:0px 0 20px 70px;">PRODUCT CODE :</h2>`;
     cell.style.textAlign = 'left';
     cell.colSpan = 2;
     cell.style.borderBottom = '1px solid black';
     cell.style.paddingTop = '20px';
 
-    // Row for Product_Name_Eng (left aligned)
+    // Row 2: Product_Name_Eng (plain text, left aligned)
     if (productNameEng) {
       row = tableBody.insertRow();
       cell = row.insertCell(0);
@@ -142,7 +182,7 @@ function generateTableForPrint(company, container) {
       cell.style.paddingLeft = '70px';
     }
 
-    // Row for Product_Name_Th (left aligned)
+    // Row 3: Product_Name_Th (plain text, left aligned)
     if (productNameTh) {
       row = tableBody.insertRow();
       cell = row.insertCell(0);
@@ -152,8 +192,8 @@ function generateTableForPrint(company, container) {
       cell.style.paddingLeft = '70px';
     }
   } else {
-    // Company B (and any new company): use the same format as Company B
-    // Two header rows: first fixed, second from company data (for company_id 2)
+    // Company B Format (and any new company):
+    // Two header rows.
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
     cell.innerHTML = `<h2 style="margin:0; padding:5px 0;">บริษัท ที.แมน ฟาร์มา จำกัด</h2>`;
@@ -167,7 +207,7 @@ function generateTableForPrint(company, container) {
     cell.colSpan = 2;
     cell.style.border = '1px solid';
 
-    // One row for product name (either Eng or Thai)
+    // Single row for product name (choose Eng if available, else Thai)
     let displayName = productNameEng || productNameTh || "";
     if (displayName) {
       row = tableBody.insertRow();
@@ -178,11 +218,12 @@ function generateTableForPrint(company, container) {
     }
   }
 
-  // Row for the barcode image using Code39
+  // Row for Barcode Image using Code39.
   if (barcode) {
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
     const barcodeSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+    // Sanitize barcode (remove asterisks and force uppercase)
     const sanitizedBarcode = barcode.replace(/\*/g, "").toUpperCase();
     JsBarcode(barcodeSVG, sanitizedBarcode, { format: "CODE39", displayValue: false, width: 1.5, height: 40 });
     cell.appendChild(barcodeSVG);
@@ -190,7 +231,7 @@ function generateTableForPrint(company, container) {
     cell.style.textAlign = 'center';
   }
 
-  // Row for the barcode number below the image
+  // Row for Barcode Number (displayed below the image)
   if (barcode) {
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
@@ -217,7 +258,7 @@ function generateTableForPrint(company, container) {
     cell.colSpan = 2;
   }
 
-  // Row for UNIT
+  // Row for UNIT.
   if (unit) {
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
@@ -239,8 +280,15 @@ function generateTableForPrint(company, container) {
   container.appendChild(table);
 }
 
-// ================= Print Label for a Single Company =================
-// Modified to use the number of copies from the input field.
+// ------------------ Print Functions ------------------
+// Print Label for a Single Company using dynamic form fields.
+function printTableDynamic(suffix) {
+  // Determine company format: "A" for CP ALL, "B" for all others.
+  const company = (suffix === "A") ? "companyA" : "companyB";
+  printTable(company);
+}
+
+// The printTable function opens a preview window, generates the label tables, and adds a print button.
 function printTable(company) {
   const printCount = parseInt(document.getElementById('printCountGeneral').value, 10);
   if (isNaN(printCount) || printCount < 1) {
@@ -254,58 +302,30 @@ function printTable(company) {
   }
 
   // Build the preview HTML
-  previewWindow.document.write("<html><head><title>Preview Labels</title><style>@media print {.no-print {display:none !important;} .page-break {page-break-after: always;} table {page-break-inside: avoid;} body {font-family: 'Sarabun', Arial, sans-serif;}}</style></head><body>");
+  previewWindow.document.write(`
+    <html>
+      <head>
+        <title>Preview Labels</title>
+        <style>
+          @media print {
+            .no-print { display: none !important; }
+            .page-break { page-break-after: always; }
+          }
+          table { page-break-inside: avoid; }
+          body { font-family: 'Sarabun', Arial, sans-serif; }
+        </style>
+      </head>
+      <body>
+  `);
   const container = previewWindow.document.createElement('div');
   for (let i = 0; i < printCount; i++) {
     generateTableForPrint(company, container);
-  }
-  previewWindow.document.body.appendChild(container);
-
-  // Add a print button to the preview window
-  const printButton = previewWindow.document.createElement('button');
-  printButton.textContent = 'Print Labels';
-  printButton.className = 'no-print';
-  printButton.style.display = 'block';
-  printButton.style.margin = '20px auto';
-  printButton.onclick = () => previewWindow.print();
-  previewWindow.document.body.appendChild(printButton);
-
-  previewWindow.document.write("</body></html>");
-  previewWindow.document.close();
-}
-
-// ================= Preview & Print Labels for Multiple Companies =================
-function previewLabels(companies) {
-  const printCount = parseInt(document.getElementById('printCountGeneral').value, 10);
-  if (isNaN(printCount) || printCount < 1) {
-    alert("Please enter a valid number of labels.");
-    return;
-  }
-  const previewWindow = window.open('', '_blank');
-  if (!previewWindow) {
-    alert('Please allow pop-ups.');
-    return;
-  }
-
-  previewWindow.document.write(`<html><head><title>Preview Labels</title><style>@media print {.no-print {display:none !important;} .page-break {page-break-after: always;} table {page-break-inside: avoid;} body {font-family: 'Sarabun', Arial, sans-serif;}}</style></head><body>`);
-  const container = previewWindow.document.createElement('div');
-  let tableCount = 0;
-  companies.forEach(company => {
-    // For any company other than "companyA", use suffix "B"
-    const suffix = (company === "companyA") ? "A" : "B";
-    const dropdown = document.getElementById(`productNameEng${suffix}`);
-    if (dropdown.value) {
-      for (let i = 0; i < printCount; i++) {
-        generateTableForPrint(company, container);
-        tableCount++;
-        if (tableCount % 3 === 0) {
-          const pageBreak = previewWindow.document.createElement('div');
-          pageBreak.className = "page-break";
-          container.appendChild(pageBreak);
-        }
-      }
+    if ((i + 1) % 3 === 0 && i !== printCount - 1) {
+      const pageBreak = previewWindow.document.createElement('div');
+      pageBreak.className = "page-break";
+      container.appendChild(pageBreak);
     }
-  });
+  }
   previewWindow.document.body.appendChild(container);
 
   const printButton = previewWindow.document.createElement('button');
@@ -316,9 +336,13 @@ function previewLabels(companies) {
   printButton.onclick = () => previewWindow.print();
   previewWindow.document.body.appendChild(printButton);
 
-  previewWindow.document.write("</body></html>");
+  previewWindow.document.write(`</body></html>`);
   previewWindow.document.close();
 }
 
-// ================= Initialize After DOM Loads =================
-document.addEventListener("DOMContentLoaded", fetchProducts);
+// Preview & Print Labels for Multiple Companies (if needed)
+function previewLabels() {
+  alert("Preview Labels function called");
+}
+
+document.addEventListener("DOMContentLoaded", loadCompanies);

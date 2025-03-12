@@ -5,27 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Manage Companies & Products</title>
     <link rel="stylesheet" href="/ParcelLabelProgram/CSS/styles.css" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css"
-    />
-
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
     <style>
+      body {
+        font-family: "Sarabun", Arial, sans-serif;
+        margin: 20px;
+      }
       h2 {
         text-align: center;
       }
       table {
         width: 90%;
-        margin: 20px 20px auto;
+        margin: 20px auto;
         border-collapse: collapse;
       }
       th,
@@ -37,16 +28,17 @@
       th {
         background-color: #f2f2f2;
       }
-      button {
-        padding: 8px 12px;
-        margin: 5px;
+      .btn {
+        padding: 6px 12px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 4px;
         cursor: pointer;
       }
-      .go-back {
-        display: block;
-        margin: 20px auto;
+      .btn:hover {
+        background-color: #0056b3;
       }
-
       /* Navbar Styles */
       .navbar {
         background-color: #007bff;
@@ -70,30 +62,18 @@
       .nav-item a:hover {
         text-decoration: underline;
       }
-
-      /* Unified Button Style */
-      .btn {
-        padding: 10px 20px;
-        background-color: #007bff;
-        border: none;
-        color: white;
-        border-radius: 4px;
-        font-size: 16px;
-        cursor: pointer;
+      .editable {
+        border-bottom: 1px dashed #ccc;
       }
-      .btn:hover {
-        background-color: #0056b3;
-      }
-
-      /* Optional: Adjust margins for the page content */
-      .input-container {
-        background: white;
-        padding: 20px;
-        margin: 20px auto;
-        width: 80%;
+      .filter-container {
+        width: 90%;
         max-width: 600px;
-        border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        margin: 20px auto;
+        text-align: center;
+      }
+      .filter-container select {
+        padding: 5px;
+        font-size: 16px;
       }
     </style>
   </head>
@@ -109,9 +89,6 @@
       </ul>
     </nav>
 
-    <h2 style="text-align: center">Parcel Label Generator</h2>
-    <hr />
-
     <h2>Manage Companies</h2>
     <table id="companyTable">
       <thead>
@@ -124,8 +101,14 @@
       <tbody></tbody>
     </table>
 
-
     <h2>Manage Products</h2>
+    <!-- Filter Products by Company -->
+    <div class="filter-container">
+      <label for="productCompanyFilter">Filter Products by Company:</label>
+      <select id="productCompanyFilter">
+        <option value="">-- All Companies --</option>
+      </select>
+    </div>
     <table id="productTable">
       <thead>
         <tr>
@@ -146,18 +129,18 @@
 
     <br />
     <br />
-
-    <div>
+    <div style="text-align: center; margin-top: 20px">
       <button class="btn" onclick="goBack()">⬅ Go Back</button>
     </div>
 
     <script>
+      // ----------------- Supabase Initialization -----------------
       const supabaseUrl = "https://cqdhhmolqaqbalapevnw.supabase.co";
       const supabaseKey =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M"; // Replace with actual key
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M";
       const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
 
-      // ------------------- Load Companies -------------------
+      // ----------------- Load Companies -----------------
       async function loadCompanies() {
         const { data, error } = await supabase
           .from("companies")
@@ -166,6 +149,11 @@
 
         const tbody = document.querySelector("#companyTable tbody");
         tbody.innerHTML = "";
+
+        const filterSelect = document.getElementById("productCompanyFilter");
+        // Clear previous filter options except the default one.
+        filterSelect.innerHTML =
+          "<option value=''>-- All Companies --</option>";
 
         if (error) {
           console.error("Error fetching companies:", error);
@@ -180,27 +168,43 @@
         }
 
         data.forEach((company) => {
+          // Populate Companies Table
           const tr = document.createElement("tr");
           tr.innerHTML = `
-          <td>${company.id}</td>
-          <td>${company.company_name}</td>
-          <td>
-            <button onclick="deleteCompany(${company.id})">Delete</button>
-          </td>
-        `;
+            <td>${company.id}</td>
+            <td><span class="editable" contentEditable="true" data-id="${company.id}" data-field="company_name">${company.company_name}</span></td>
+            <td>
+              <button class="btn" onclick="saveCompany(${company.id})">Save</button>
+              <button class="btn" onclick="deleteCompany(${company.id})">Delete</button>
+            </td>
+          `;
           tbody.appendChild(tr);
+
+          // Populate Filter Dropdown
+          const option = document.createElement("option");
+          option.value = company.id;
+          option.textContent = company.company_name;
+          filterSelect.appendChild(option);
         });
       }
 
-      // ------------------- Load Products -------------------
+      // ----------------- Load Products -----------------
       async function loadProducts() {
-        const { data, error } = await supabase
+        // Check if a company filter is selected
+        const filterValue = document.getElementById(
+          "productCompanyFilter"
+        ).value;
+        let query = supabase
           .from("products")
           .select(
             "id, company_id, product_name_eng, product_name_th, product_barcode, product_mfg, product_lot, product_exp, unit"
-          )
-          .order("id", { ascending: true });
+          );
+        if (filterValue) {
+          query = query.eq("company_id", parseInt(filterValue));
+        }
+        query = query.order("id", { ascending: true });
 
+        const { data, error } = await query;
         const tbody = document.querySelector("#productTable tbody");
         tbody.innerHTML = "";
 
@@ -212,56 +216,122 @@
         }
 
         if (!data.length) {
-          tbody.innerHTML = "<tr><td colspan='10'>No products found.</td></tr>";
+          tbody.innerHTML =
+            "<tr><td colspan='10'>No products found for the selected company.</td></tr>";
           return;
         }
 
         data.forEach((product) => {
           const tr = document.createElement("tr");
           tr.innerHTML = `
-          <td>${product.id}</td>
-          <td>${product.company_id}</td>
-          <td>${product.product_name_eng}</td>
-          <td>${product.product_name_th}</td>
-          <td>${product.product_barcode}</td>
-          <td>${product.product_mfg}</td>
-          <td>${product.product_lot}</td>
-          <td>${product.product_exp}</td>
-          <td>${product.unit}</td>
-          <td>
-            <button  onclick="deleteProduct(${product.id})">Delete</button>
-          </td>
-        `;
+            <td>${product.id}</td>
+            <td>${product.company_id}</td>
+            <td><span class="editable" contentEditable="true" data-id="${product.id}" data-field="product_name_eng">${product.product_name_eng}</span></td>
+            <td><span class="editable" contentEditable="true" data-id="${product.id}" data-field="product_name_th">${product.product_name_th}</span></td>
+            <td><span class="editable" contentEditable="true" data-id="${product.id}" data-field="product_barcode">${product.product_barcode}</span></td>
+            <td><span class="editable" contentEditable="true" data-id="${product.id}" data-field="product_mfg">${product.product_mfg}</span></td>
+            <td><span class="editable" contentEditable="true" data-id="${product.id}" data-field="product_lot">${product.product_lot}</span></td>
+            <td><span class="editable" contentEditable="true" data-id="${product.id}" data-field="product_exp">${product.product_exp}</span></td>
+            <td><span class="editable" contentEditable="true" data-id="${product.id}" data-field="unit">${product.unit}</span></td>
+            <td>
+              <button class="btn" onclick="saveProduct(${product.id})">Save</button>
+              <button class="btn" onclick="deleteProduct(${product.id})">Delete</button>
+            </td>
+          `;
           tbody.appendChild(tr);
         });
       }
 
-      // ------------------- Delete Functions -------------------
-      async function deleteCompany(companyId) {
-        if (!confirm("Are you sure you want to delete this company?")) return;
+      // Update product table when filter changes
+      document
+        .getElementById("productCompanyFilter")
+        .addEventListener("change", loadProducts);
 
-        const { data, error } = await supabase
+      // ----------------- Delete and Save Functions -----------------
+      async function saveCompany(companyId) {
+        const span = document.querySelector(
+          `.editable[data-id="${companyId}"][data-field="company_name"]`
+        );
+        const newName = span.textContent.trim();
+        if (!newName) return alert("Company name cannot be empty.");
+        const { error } = await supabase
+          .from("companies")
+          .update({ company_name: newName })
+          .eq("id", companyId);
+        if (error) {
+          console.error("Error updating company:", error);
+          alert("Error updating company!");
+        } else {
+          alert("Company updated successfully!");
+          loadCompanies();
+          loadProducts(); // Refresh products in case company name is used there
+        }
+      }
+
+      async function deleteCompany(companyId) {
+        if (
+          !confirm(
+            "Are you sure you want to delete this company? This action cannot be undone."
+          )
+        )
+          return;
+        const { error } = await supabase
           .from("companies")
           .delete()
           .eq("id", companyId);
-
         if (error) {
           console.error("Error deleting company:", error);
           alert("Error deleting company!");
         } else {
           alert("Company deleted successfully!");
           loadCompanies();
+          loadProducts();
+        }
+      }
+
+      async function saveProduct(productId) {
+        const fields = [
+          "product_name_eng",
+          "product_name_th",
+          "product_barcode",
+          "product_mfg",
+          "product_lot",
+          "product_exp",
+          "unit",
+        ];
+        const updatedData = {};
+        fields.forEach((field) => {
+          const span = document.querySelector(
+            `.editable[data-id="${productId}"][data-field="${field}"]`
+          );
+          if (span) {
+            updatedData[field] = span.textContent.trim();
+          }
+        });
+        const { error } = await supabase
+          .from("products")
+          .update(updatedData)
+          .eq("id", productId);
+        if (error) {
+          console.error("Error updating product:", error);
+          alert("Error updating product!");
+        } else {
+          alert("Product updated successfully!");
+          loadProducts();
         }
       }
 
       async function deleteProduct(productId) {
-        if (!confirm("Are you sure you want to delete this product?")) return;
-
-        const { data, error } = await supabase
+        if (
+          !confirm(
+            "Are you sure you want to delete this product? This action cannot be undone."
+          )
+        )
+          return;
+        const { error } = await supabase
           .from("products")
           .delete()
           .eq("id", productId);
-
         if (error) {
           console.error("Error deleting product:", error);
           alert("Error deleting product!");
@@ -271,14 +341,18 @@
         }
       }
 
-      // ------------------- Go Back Button -------------------
+      // ----------------- Go Back Button -----------------
       function goBack() {
-        {
-          window.location.href = "index.html"; // Change to your desired page
+        if (
+          confirm(
+            "Are you sure you want to go back? Unsaved changes will be lost."
+          )
+        ) {
+          window.location.href = "index.html";
         }
       }
 
-      // ------------------- Initialize -------------------
+      // ----------------- Initialize -----------------
       document.addEventListener("DOMContentLoaded", () => {
         loadCompanies();
         loadProducts();

@@ -81,13 +81,14 @@ body {
 /* Unified Button Style */
 .btn {
   padding: 10px 20px;
-  font-size: 16px;
-  border: none;
-  border-radius: 4px;
+  font-size: 12px;
+  border: solid white;
+  border-radius: 50px;
   background-color: #007bff;
   color: #fff;
   cursor: pointer;
   transition: background-color 0.3s;
+  margin: 1px;
 }
 .btn:hover {
   background-color: #0056b3;
