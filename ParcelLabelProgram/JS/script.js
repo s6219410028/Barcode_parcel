@@ -17,11 +17,10 @@ async function fetchProducts() {
     console.log("Fetched Products:", data);
     productsData = data;
 
-    // Populate dropdowns based on company_id:
-    // Company A: CP ALL (company_id = 1)
+    // Populate dropdowns based on company_id.
+    // For Company A, we use "companyA"; for all others, we use the Company B fields.
     populateDropdown("companyA", data.filter(p => p.company_id === 1));
-    // Company B: บริษัท เอ็กซ์เพรสเมด จำกัด (company_id = 2)
-    populateDropdown("companyB", data.filter(p => p.company_id === 2));
+    populateDropdown("companyB", data.filter(p => p.company_id !== 1));
   } catch (err) {
     console.error("Error fetching data:", err);
   }
@@ -29,7 +28,8 @@ async function fetchProducts() {
 
 // ================= Populate Dropdown for a Given Company =================
 function populateDropdown(company, data) {
-  const suffix = company.slice(-1).toUpperCase(); // 'A' or 'B'
+  // Use "A" if company is exactly "companyA", otherwise force "B" for any other company.
+  const suffix = (company === "companyA") ? "A" : "B";
   const dropdown = document.getElementById(`productNameEng${suffix}`);
   dropdown.innerHTML = "<option value=''>Select Product</option>";
 
@@ -65,23 +65,23 @@ function updateDropdown(company, barcode) {
     clearFields(company);
     return;
   }
-  const suffix = company.slice(-1).toUpperCase();
+  // Use "A" for companyA; for any other, use "B"
+  const suffix = (company === "companyA") ? "A" : "B";
   document.getElementById(`productNameTh${suffix}`).value = product.product_name_th || "";
   document.getElementById(`barcode${suffix}`).value = product.product_barcode || "";
   document.getElementById(`mfg${suffix}`).value = product.product_mfg || "";
   document.getElementById(`lot${suffix}`).value = product.product_lot || "";
-  // For Company A (CP ALL) we omit product_exp as requested
-  if (company !== "companyA") {
-    document.getElementById(`exp${suffix}`).value = product.product_exp || "";
-  } else {
+  if (company === "companyA") {
     document.getElementById(`exp${suffix}`).value = "";
+  } else {
+    document.getElementById(`exp${suffix}`).value = product.product_exp || "";
   }
   document.getElementById(`unit${suffix}`).value = product.unit || "";
 }
 
 // ================= Clear Form Fields =================
 function clearFields(company) {
-  const suffix = company.slice(-1).toUpperCase();
+  const suffix = (company === "companyA") ? "A" : "B";
   document.getElementById(`productNameTh${suffix}`).value = "";
   document.getElementById(`barcode${suffix}`).value = "";
   document.getElementById(`mfg${suffix}`).value = "";
@@ -92,27 +92,25 @@ function clearFields(company) {
 
 // ================= Generate Printable Table for a Label =================
 function generateTableForPrint(company, container) {
-  const suffix = company.slice(-1).toUpperCase(); // "A" or "B"
+  // Use "A" for companyA, otherwise use "B"
+  const suffix = (company === "companyA") ? "A" : "B";
 
-  // Get the dropdown element and selected barcode
+  // Get the dropdown element and selected barcode from the appropriate field
   const dropdown = document.getElementById(`productNameEng${suffix}`);
   const selectedBarcode = dropdown.value;
-  // Find the product in our global productsData by matching barcode
+  // Find the product by matching barcode in the global productsData
   const product = productsData.find(p => p.product_barcode === selectedBarcode);
 
-  // Determine the display name: for Company B, we'll use product_name_eng if available; otherwise, product_name_th.
-  let displayName = "";
-  if (product) {
-    displayName = product.product_name_eng || product.product_name_th || "";
-  }
-
+  // For Company A, we use both product_name_eng and product_name_th.
+  let productNameEng = product ? product.product_name_eng : "";
+  let productNameTh = product ? product.product_name_th : "";
   // Get the values from the auto-filled fields.
   let barcode = document.getElementById(`barcode${suffix}`).value;
   let mfg = document.getElementById(`mfg${suffix}`).value;
   let lot = document.getElementById(`lot${suffix}`).value;
   let unit = document.getElementById(`unit${suffix}`).value;
   let exp = "";
-  if (company === "companyB" && product) {
+  if (company !== "companyA" && product) {
     exp = product.product_exp || "";
   }
 
@@ -125,35 +123,59 @@ function generateTableForPrint(company, container) {
   const tableBody = table.createTBody();
 
   if (company === "companyA") {
-    // Company A: header is "PRODUCT CODE :"
+    // Company A: header "PRODUCT CODE :" left-aligned
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
-    cell.innerHTML = `<h2>PRODUCT CODE :</h2>`;
+    cell.innerHTML = `<h2 style="margin:0; padding:5px 0 5px 70px;">PRODUCT CODE :</h2>`;
     cell.style.textAlign = 'left';
     cell.colSpan = 2;
     cell.style.borderBottom = '1px solid black';
-  } else if (company === "companyB") {
-    // Company B: two header rows
+    cell.style.paddingTop = '20px';
+
+    // Row for Product_Name_Eng (left aligned)
+    if (productNameEng) {
+      row = tableBody.insertRow();
+      cell = row.insertCell(0);
+      cell.innerHTML = `<span style="font-size:1.25rem; font-weight:bold; margin:0; padding:5px 0;">Product_Name_Eng: </span>${productNameEng}`;
+      cell.style.textAlign = 'left';
+      cell.colSpan = 2;
+      cell.style.paddingLeft = '70px';
+    }
+
+    // Row for Product_Name_Th (left aligned)
+    if (productNameTh) {
+      row = tableBody.insertRow();
+      cell = row.insertCell(0);
+      cell.innerHTML = `<span style="font-size:1.25rem; font-weight:bold; margin:0; padding:5px 0;">Product_Name_Th: </span>${productNameTh}`;
+      cell.style.textAlign = 'left';
+      cell.colSpan = 2;
+      cell.style.paddingLeft = '70px';
+    }
+  } else {
+    // Company B (and any new company): use the same format as Company B
+    // Two header rows: first fixed, second from company data (for company_id 2)
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
-    cell.innerHTML = `<h2>บริษัท ที.แมน ฟาร์มา จำกัด</h2>`;
+    cell.innerHTML = `<h2 style="margin:0; padding:5px 0;">บริษัท ที.แมน ฟาร์มา จำกัด</h2>`;
     cell.style.textAlign = 'center';
     cell.colSpan = 2;
 
     row = tableBody.insertRow();
     cell = row.insertCell(0);
-    cell.innerHTML = `<h2>บริษัทเอ็กซ์เพรสเมด จำกัด</h2>`;
+    cell.innerHTML = `<h2 style="margin:0; padding:5px 0;">บริษัทเอ็กซ์เพรสเมด จำกัด</h2>`;
     cell.style.textAlign = 'center';
     cell.colSpan = 2;
-  }
+    cell.style.border = '1px solid';
 
-  // Row for the product name (one row only)
-  if (displayName) {
-    let row = tableBody.insertRow();
-    let cell = row.insertCell(0);
-    cell.innerHTML = `<h3>${displayName}</h3>`;
-    cell.style.textAlign = 'center';
-    cell.colSpan = 2;
+    // One row for product name (either Eng or Thai)
+    let displayName = productNameEng || productNameTh || "";
+    if (displayName) {
+      row = tableBody.insertRow();
+      cell = row.insertCell(0);
+      cell.innerHTML = `<h3 style="margin:0; padding:5px 0;">${displayName}</h3>`;
+      cell.style.textAlign = 'center';
+      cell.colSpan = 2;
+    }
   }
 
   // Row for the barcode image using Code39
@@ -161,9 +183,8 @@ function generateTableForPrint(company, container) {
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
     const barcodeSVG = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-    // Sanitize the barcode value: remove asterisks and force uppercase for Code39
     const sanitizedBarcode = barcode.replace(/\*/g, "").toUpperCase();
-    JsBarcode(barcodeSVG, sanitizedBarcode, { format: "CODE39", displayValue: false, width: 1.5, height: 60 });
+    JsBarcode(barcodeSVG, sanitizedBarcode, { format: "CODE39", displayValue: false, width: 1.5, height: 40 });
     cell.appendChild(barcodeSVG);
     cell.colSpan = 2;
     cell.style.textAlign = 'center';
@@ -173,21 +194,26 @@ function generateTableForPrint(company, container) {
   if (barcode) {
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
-    cell.innerHTML = `<h3>${barcode}</h3>`;
+    cell.innerHTML = `<h3 style="margin:0; padding:5px 0;">${barcode}</h3>`;
     cell.style.textAlign = 'center';
     cell.colSpan = 2;
   }
 
-  // Row for MFG & LOT (and EXP for Company B)
-  if (mfg || lot || (company === "companyB" && exp)) {
+  // Row for MFG / LOT (and for Company B, include EXP with spacing)
+  if (mfg || lot || (company !== "companyA" && exp)) {
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
-    if (company === "companyB") {
-      cell.innerHTML = `<b>MFG:</b> ${mfg || ""} | <b>LOT:</b> ${lot || ""} | <b>EXP:</b> ${exp || ""}`;
+    if (company !== "companyA") {
+      cell.innerHTML = `<span style="margin-right:20px; font-size:1.25rem;"><b>MFG :</b> ${mfg || ""}</span>
+                        <span style="margin-right:20px; font-size:1.25rem;"><b>LOT :</b> ${lot || ""}</span>
+                        <span style="font-size:1.25rem;"><b>EXP :</b> ${exp || ""}</span>`;
+      cell.style.textAlign = 'center';
     } else {
-      cell.innerHTML = `<b>MFG:</b> ${mfg || ""} | <b>LOT:</b> ${lot || ""}`;
+      cell.innerHTML = `<span style="margin-right:20px; font-size:1.25rem;"><b>MFG :</b> ${mfg || ""}</span>
+                        <span style="font-size:1.25rem;"><b>LOT :</b> ${lot || ""}</span>`;
+      cell.style.textAlign = 'left';
+      cell.style.paddingLeft = '70px';
     }
-    cell.style.textAlign = 'center';
     cell.colSpan = 2;
   }
 
@@ -195,18 +221,26 @@ function generateTableForPrint(company, container) {
   if (unit) {
     let row = tableBody.insertRow();
     let cell = row.insertCell(0);
-    cell.innerHTML = `<b>UNIT:</b> ${unit}`;
-    cell.style.textAlign = 'center';
-    cell.colSpan = 2;
+    if (company === "companyA") {
+      cell.innerHTML = `<span style="font-size:1.25rem; font-weight:bold;">UNIT:</span> <span style="font-size:1.25rem;">${unit}</span>`;
+      cell.style.textAlign = 'left';
+      cell.colSpan = 2;
+      cell.style.borderTop = '1px solid black';
+      cell.style.paddingLeft = '70px';
+    } else {
+      cell.innerHTML = `<span style="font-size:1.25rem; font-weight:bold;">บรรจุ:</span> <span style="font-size:1.25rem;">${unit}</span>`;
+      cell.style.textAlign = 'center';
+      cell.colSpan = 2;
+      cell.style.borderTop = '1px solid black';
+    }
   }
 
   table.appendChild(tableBody);
   container.appendChild(table);
 }
 
-
 // ================= Print Label for a Single Company =================
-// Now modified to use the number of copies from the input field.
+// Modified to use the number of copies from the input field.
 function printTable(company) {
   const printCount = parseInt(document.getElementById('printCountGeneral').value, 10);
   if (isNaN(printCount) || printCount < 1) {
@@ -220,7 +254,7 @@ function printTable(company) {
   }
 
   // Build the preview HTML
-  previewWindow.document.write("<html><head><title>Preview Labels</title></head><body>");
+  previewWindow.document.write("<html><head><title>Preview Labels</title><style>@media print {.no-print {display:none !important;} .page-break {page-break-after: always;} table {page-break-inside: avoid;} body {font-family: 'Sarabun', Arial, sans-serif;}}</style></head><body>");
   const container = previewWindow.document.createElement('div');
   for (let i = 0; i < printCount; i++) {
     generateTableForPrint(company, container);
@@ -230,6 +264,7 @@ function printTable(company) {
   // Add a print button to the preview window
   const printButton = previewWindow.document.createElement('button');
   printButton.textContent = 'Print Labels';
+  printButton.className = 'no-print';
   printButton.style.display = 'block';
   printButton.style.margin = '20px auto';
   printButton.onclick = () => previewWindow.print();
@@ -252,35 +287,17 @@ function previewLabels(companies) {
     return;
   }
 
-  // Write a complete HTML document with a CSS rule to hide the print button
-  previewWindow.document.write(`
-    <html>
-      <head>
-        <title>Preview Labels</title>
-        <style>
-          @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-after: always; }
-          }
-          table { page-break-inside: avoid; }
-          body { font-family: 'Sarabun', Arial, sans-serif; }
-        </style>
-      </head>
-      <body>
-  `);
-
+  previewWindow.document.write(`<html><head><title>Preview Labels</title><style>@media print {.no-print {display:none !important;} .page-break {page-break-after: always;} table {page-break-inside: avoid;} body {font-family: 'Sarabun', Arial, sans-serif;}}</style></head><body>`);
   const container = previewWindow.document.createElement('div');
   let tableCount = 0;
-
   companies.forEach(company => {
-    const suffix = company.slice(-1).toUpperCase();
+    // For any company other than "companyA", use suffix "B"
+    const suffix = (company === "companyA") ? "A" : "B";
     const dropdown = document.getElementById(`productNameEng${suffix}`);
-    // Only generate labels if a product is selected
     if (dropdown.value) {
       for (let i = 0; i < printCount; i++) {
         generateTableForPrint(company, container);
         tableCount++;
-        // Insert a page break after every 3 tables
         if (tableCount % 3 === 0) {
           const pageBreak = previewWindow.document.createElement('div');
           pageBreak.className = "page-break";
@@ -289,64 +306,6 @@ function previewLabels(companies) {
       }
     }
   });
-
-  previewWindow.document.body.appendChild(container);
-
-  // Add a print button with the "no-print" class so it won't appear in printout
-  const printButton = previewWindow.document.createElement('button');
-  printButton.textContent = 'Print Labels';
-  printButton.className = 'no-print';
-  printButton.style.display = 'block';
-  printButton.style.margin = '20px auto';
-  printButton.onclick = () => previewWindow.print();
-  previewWindow.document.body.appendChild(printButton);
-
-  previewWindow.document.write(`
-      </body>
-    </html>
-  `);
-  previewWindow.document.close();
-}
-
-// ================= Print Label for a Single Company =================
-function printTable(company) {
-  const printCount = parseInt(document.getElementById('printCountGeneral').value, 10);
-  if (isNaN(printCount) || printCount < 1) {
-    alert("Please enter a valid number of labels.");
-    return;
-  }
-  const previewWindow = window.open('', '_blank');
-  if (!previewWindow) {
-    alert('Please allow pop-ups.');
-    return;
-  }
-
-  previewWindow.document.write(`
-    <html>
-      <head>
-        <title>Preview Labels</title>
-        <style>
-          @media print {
-            .no-print { display: none !important; }
-            .page-break { page-break-after: always; }
-          }
-          table { page-break-inside: avoid; }
-          body { font-family: 'Sarabun', Arial, sans-serif; }
-        </style>
-      </head>
-      <body>
-  `);
-
-  const container = previewWindow.document.createElement('div');
-  for (let i = 0; i < printCount; i++) {
-    generateTableForPrint(company, container);
-    if ((i + 1) % 3 === 0 && i !== printCount - 1) {
-      const pageBreak = previewWindow.document.createElement('div');
-      pageBreak.className = "page-break";
-      container.appendChild(pageBreak);
-    }
-  }
-
   previewWindow.document.body.appendChild(container);
 
   const printButton = previewWindow.document.createElement('button');
@@ -357,14 +316,9 @@ function printTable(company) {
   printButton.onclick = () => previewWindow.print();
   previewWindow.document.body.appendChild(printButton);
 
-  previewWindow.document.write(`
-      </body>
-    </html>
-  `);
+  previewWindow.document.write("</body></html>");
   previewWindow.document.close();
 }
-
-
 
 // ================= Initialize After DOM Loads =================
 document.addEventListener("DOMContentLoaded", fetchProducts);

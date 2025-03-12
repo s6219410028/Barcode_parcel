@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add New Product & Company</title>
+    <link rel="stylesheet" href="/ParcelLabelProgram/CSS/styles.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css"
+    />
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+      /* Navbar Styles */
+      .navbar {
+        background-color: #007bff;
+        padding: 10px 20px;
+      }
+      .nav-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+      .nav-item {
+        margin-right: 20px;
+      }
+      .nav-item a {
+        text-decoration: none;
+        color: white;
+        font-size: 16px;
+      }
+      .nav-item a:hover {
+        text-decoration: underline;
+      }
+
+      /* Unified Button Style */
+      .btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background-color: #0056b3;
+      }
+
+      /* Optional: Adjust margins for the page content */
+      .input-container {
+        background: white;
+        padding: 20px;
+        margin: 20px auto;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+      <ul class="nav-list">
+        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item">
+          <a href="./addProduct.html">Add New Product</a>
+        </li>
+        <li class="nav-item"><a href="./manage.html">Manage Data</a></li>
+      </ul>
+    </nav>
+
+    <h2 style="text-align: center">Parcel Label Generator</h2>
+    <hr />
+    <h2 style="text-align: center">Add New Company</h2>
+
+    <div class="input-container">
+      <label for="newCompanyName">New Company Name:</label>
+      <input
+        type="text"
+        id="newCompanyName"
+        placeholder="Enter new company name"
+      />
+
+      <button class="btn" onclick="addCompany()">Add Company</button>
+    </div>
+
+    <h2 style="text-align: center">Add New Product</h2>
+
+    <div class="input-container">
+      <label for="companyId">Select Company:</label>
+      <select id="companyId" required>
+        <option value="">Loading...</option>
+      </select>
+
+      <label for="productName">Product Name (Eng):</label>
+      <input
+        type="text"
+        id="productName"
+        placeholder="Enter product name"
+        required
+      />
+
+      <label for="productNameTh">Product Name (Thai):</label>
+      <input
+        type="text"
+        id="productNameTh"
+        placeholder="Enter product name (Thai)"
+      />
+
+      <label for="barcode">Barcode:</label>
+      <input type="text" id="barcode" placeholder="Enter barcode" required />
+
+      <label for="mfg">MFG (Manufacturing Date):</label>
+      <input type="date" id="mfg" required />
+
+      <label for="lot">LOT Number:</label>
+      <input type="text" id="lot" placeholder="Enter LOT number" required />
+
+      <label for="exp">EXP (Expiration Date):</label>
+      <input type="date" id="exp" required />
+
+      <label for="unit">UNIT:</label>
+      <input type="text" id="unit" placeholder="Enter unit" required />
+
+      <button class="btn" onclick="uploadToSupabase()">Save Product</button>
+    </div>
+
+    <br />
+    <br />
+
+    <div><button class="btn" onclick="goBack()">⬅ Go Back</button></div>
+
+    <script>
+      // Initialize Supabase Client
+      const supabaseUrl = "https://cqdhhmolqaqbalapevnw.supabase.co";
+      const supabaseKey =
+        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNxZGhobW9scWFxYmFsYXBldm53Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDE1NzA1NjcsImV4cCI6MjA1NzE0NjU2N30.aSGjO9lqWHN-BxJDhul6iN3yDZqkNeyG6k2q3vr5e0M"; // Replace with actual key
+      const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+      // Fetch and populate company dropdown
+      async function loadCompanies() {
+        const { data, error } = await supabase
+          .from("companies")
+          .select("id, company_name");
+
+        const companyDropdown = document.getElementById("companyId");
+        companyDropdown.innerHTML = ""; // Clear existing options
+
+        if (error) {
+          console.error("Error fetching companies:", error);
+          companyDropdown.innerHTML =
+            '<option value="">Error loading companies</option>';
+          return;
+        }
+
+        if (data.length === 0) {
+          companyDropdown.innerHTML =
+            '<option value="">No companies found</option>';
+          return;
+        }
+
+        data.forEach((company) => {
+          const option = document.createElement("option");
+          option.value = company.id;
+          option.textContent = company.company_name;
+          companyDropdown.appendChild(option);
+        });
+      }
+
+      // Add a new company
+      async function addCompany() {
+        const newCompanyName = document
+          .getElementById("newCompanyName")
+          .value.trim();
+
+        if (!newCompanyName) {
+          alert("Please enter a company name.");
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("companies")
+          .insert([{ company_name: newCompanyName }])
+          .select();
+
+        if (error) {
+          console.error("Error adding company:", error);
+          alert("Error adding company!");
+        } else {
+          alert("Company added successfully!");
+          document.getElementById("newCompanyName").value = ""; // Clear input
+          loadCompanies(); // Refresh company dropdown
+        }
+      }
+
+      // Upload product data to Supabase
+      async function uploadToSupabase() {
+        const companyId = document.getElementById("companyId").value;
+        const productName = document.getElementById("productName").value;
+        const productNameTh = document.getElementById("productNameTh").value;
+        const barcode = document.getElementById("barcode").value;
+        const mfg = document.getElementById("mfg").value;
+        const lot = document.getElementById("lot").value;
+        const exp = document.getElementById("exp").value;
+        const unit = document.getElementById("unit").value;
+
+        if (
+          !companyId ||
+          !productName ||
+          !barcode ||
+          !mfg ||
+          !lot ||
+          !exp ||
+          !unit
+        ) {
+          alert("Please fill in all required fields.");
+          return;
+        }
+
+        const { data, error } = await supabase.from("products").insert([
+          {
+            company_id: parseInt(companyId),
+            product_name_eng: productName,
+            product_name_th: productNameTh,
+            product_barcode: barcode,
+            product_mfg: mfg,
+            product_lot: lot,
+            product_exp: exp,
+            unit: unit,
+          },
+        ]);
+
+        if (error) {
+          console.error("Upload Error:", error);
+          alert("Error uploading data to Supabase!");
+        } else {
+          alert("Product successfully added!");
+          document.getElementById("companyId").value = "";
+          document.getElementById("productName").value = "";
+          document.getElementById("productNameTh").value = "";
+          document.getElementById("barcode").value = "";
+          document.getElementById("mfg").value = "";
+          document.getElementById("lot").value = "";
+          document.getElementById("exp").value = "";
+          document.getElementById("unit").value = "";
+        }
+      }
+
+      function goBack() {
+        window.location.href = "index.html";
+      }
+
+      // Load companies when page loads
+      document.addEventListener("DOMContentLoaded", loadCompanies);
+    </script>
+  </body>
+</html>

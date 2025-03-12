@@ -1,99 +1,200 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Parcel Label</title>
     <link rel="stylesheet" href="/ParcelLabelProgram/CSS/styles.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/css/selectize.default.min.css"
+    />
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/selectize.js/0.13.3/js/standalone/selectize.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-</head>
-<body>
+
+    <style>
+      /* Navbar Styles */
+      .navbar {
+        background-color: #007bff;
+        padding: 10px 20px;
+      }
+      .nav-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        align-items: center;
+      }
+      .nav-item {
+        margin-right: 20px;
+      }
+      .nav-item a {
+        text-decoration: none;
+        color: white;
+        font-size: 16px;
+      }
+      .nav-item a:hover {
+        text-decoration: underline;
+      }
+
+      /* Unified Button Style */
+      .btn {
+        padding: 10px 20px;
+        background-color: #007bff;
+        border: none;
+        color: white;
+        border-radius: 4px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+      .btn:hover {
+        background-color: #0056b3;
+      }
+
+      /* Optional: Adjust margins for the page content */
+      .input-container {
+        background: white;
+        padding: 20px;
+        margin: 20px auto;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 8px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Top Navbar -->
+    <nav class="navbar">
+      <ul class="nav-list">
+        <li class="nav-item"><a href="index.html">Home</a></li>
+        <li class="nav-item">
+          <a href="./addProduct.html">Add New Product</a>
+        </li>
+        <li class="nav-item"><a href="./manage.html">Manage Data</a></li>
+      </ul>
+    </nav>
 
     <h2 style="text-align: center">Parcel Label Generator</h2>
     <hr />
 
+    <!-- CP ALL Section -->
     <h2 style="text-align: center">CP ALL Barcode Label</h2>
     <div class="input-container" id="companyAForm">
-        <div style="margin-bottom: 10px">
-            <label for="companyNameA">Company Name:</label>
-            <select id="companyNameA" disabled>
-                <option value="บริษัท CP ALL">บริษัท CP ALL</option>
-            </select>
-        </div>
+      <div style="margin-bottom: 10px">
+        <label for="companyNameA">Company Name:</label>
+        <select id="companyNameA" disabled>
+          <option value="บริษัท CP ALL">บริษัท CP ALL</option>
+        </select>
+      </div>
 
-        <label for="productNameEngA">Product Name (Eng):</label>
-        <select id="productNameEngA" onchange="updateDropdown('companyA', this.value)"></select>
+      <label for="productNameEngA">Product Name (Eng):</label>
+      <select
+        id="productNameEngA"
+        onchange="updateDropdown('companyA', this.value)"
+      ></select>
 
-        <label for="productNameThA">Product Name (Thai):</label>
-        <input type="text" id="productNameThA" readonly>
+      <label for="productNameThA">Product Name (Thai):</label>
+      <input type="text" id="productNameThA" readonly />
 
-        <label for="barcodeA">Barcode:</label>
-        <input type="text" id="barcodeA" readonly>
+      <label for="barcodeA">Barcode:</label>
+      <input type="text" id="barcodeA" readonly />
 
-        <label for="mfgA">MFG:</label>
-        <input type="text" id="mfgA" readonly>
+      <label for="mfgA">MFG:</label>
+      <input type="text" id="mfgA" readonly />
 
-        <label for="lotA">LOT:</label>
-        <input type="text" id="lotA" readonly>
+      <label for="lotA">LOT:</label>
+      <input type="text" id="lotA" readonly />
 
-        <label for="expA">EXP:</label>
-        <input type="text" id="expA" readonly>
+      <label for="expA">EXP:</label>
+      <input type="text" id="expA" readonly />
 
-        <label for="unitA">UNIT:</label>
-        <input type="text" id="unitA" readonly>
+      <label for="unitA">UNIT:</label>
+      <input type="text" id="unitA" readonly />
 
-        <button onclick="printTable('companyA')">Print Label (Company A)</button>
+      <button class="btn" onclick="printTable('companyA')">
+        Print Label (Company A)
+      </button>
     </div>
 
     <hr />
 
+    <!-- Company B Section -->
     <h2 style="text-align: center">บริษัท เอ็กซ์เพรสเมด จำกัด Barcode Label</h2>
     <div class="input-container" id="companyBForm">
-        <div style="margin-bottom: 10px">
-            <label for="companyNameB">Company Name:</label>
-            <select id="companyNameB" disabled>
-                <option value="บริษัท เอ็กซ์เพรสเมด จำกัด">บริษัท เอ็กซ์เพรสเมด จำกัด</option>
-            </select>
-        </div>
+      <div style="margin-bottom: 10px">
+        <label for="companyNameB">Company Name:</label>
+        <select id="companyNameB" disabled>
+          <option value="บริษัท เอ็กซ์เพรสเมด จำกัด">
+            บริษัท เอ็กซ์เพรสเมด จำกัด
+          </option>
+        </select>
+      </div>
 
-        <label for="productNameEngB">Product Name (Eng):</label>
-        <select id="productNameEngB" onchange="updateDropdown('companyB', this.value)"></select>
+      <label for="productNameEngB">Product Name (Eng):</label>
+      <select
+        id="productNameEngB"
+        onchange="updateDropdown('companyB', this.value)"
+      ></select>
 
-        <label for="productNameThB">Product Name (Thai):</label>
-        <input type="text" id="productNameThB" readonly>
+      <label for="productNameThB">Product Name (Thai):</label>
+      <input type="text" id="productNameThB" readonly />
 
-        <label for="barcodeB">Barcode:</label>
-        <input type="text" id="barcodeB" readonly>
+      <label for="barcodeB">Barcode:</label>
+      <input type="text" id="barcodeB" readonly />
 
-        <label for="mfgB">MFG:</label>
-        <input type="text" id="mfgB" readonly>
+      <label for="mfgB">MFG:</label>
+      <input type="text" id="mfgB" readonly />
 
-        <label for="lotB">LOT:</label>
-        <input type="text" id="lotB" readonly>
+      <label for="lotB">LOT:</label>
+      <input type="text" id="lotB" readonly />
 
-        <label for="expB">EXP:</label>
-        <input type="text" id="expB" readonly>
+      <label for="expB">EXP:</label>
+      <input type="text" id="expB" readonly />
 
-        <label for="unitB">UNIT:</label>
-        <input type="text" id="unitB" readonly>
+      <label for="unitB">UNIT:</label>
+      <input type="text" id="unitB" readonly />
 
-        <button onclick="printTable('companyB')">Print Label (Company B)</button>
+      <button class="btn" onclick="printTable('companyB')">
+        Print Label (Company B)
+      </button>
     </div>
 
     <br />
 
-    <div style="text-align: center;">
+    <!-- Print All Labels Section -->
+    <div style="text-align: center">
       <label for="printCountGeneral">Labels per page:</label>
-      <input type="number" id="printCountGeneral" value="1" min="1">
-      <button onclick="previewLabels(['companyA', 'companyB'])">Print All Labels</button>
-  </div>
+      <input type="number" id="printCountGeneral" value="1" min="1" />
+      <button class="btn" onclick="previewLabels(['companyA', 'companyB'])">
+        Print All Labels
+      </button>
+    </div>
+
+    <!-- Optional: Footer navigation (if desired) -->
+    <div style="text-align: center; margin-top: 20px">
+      <button class="btn" onclick="goToAddProductPage()">
+        Add New Product
+      </button>
+      <button class="btn" onclick="goToManagePage()">Manage Data</button>
+    </div>
+
+    <script>
+      function goToAddProductPage() {
+        window.location.href = "./addProduct.html"; // Redirect to add new product page
+      }
+      function goToManagePage() {
+        window.location.href = "./manage.html"; // Redirect to manage data page
+      }
+    </script>
 
     <script src="/ParcelLabelProgram/JS/script.js"></script>
-</body>
+  </body>
 </html>
