@@ -9,7 +9,7 @@
     <style>
       body {
         font-family: "Sarabun", Arial, sans-serif;
-        margin: 20px;
+        /* margin: 20px; */
       }
       h2 {
         text-align: center;
@@ -252,7 +252,7 @@
         const span = document.querySelector(
           `.editable[data-id="${companyId}"][data-field="company_name"]`
         );
-        const newName = span.textContent.trim();
+        const newName = span.textContent.trim().replace(/\u00A0/g, "");
         if (!newName) return alert("Company name cannot be empty.");
         const { error } = await supabase
           .from("companies")
@@ -289,35 +289,46 @@
         }
       }
 
-      async function saveProduct(productId) {
-        const fields = [
-          "product_name_eng",
-          "product_name_th",
-          "product_barcode",
-          "product_mfg",
-          "product_lot",
-          "product_exp",
-          "unit",
-        ];
-        const updatedData = {};
+      async function saveProduct(id) {
+        console.log("Updating product with ID:", id);
+
+        // Find all editable fields inside the table
+        const fields = document.querySelectorAll(`span[data-id="${id}"]`);
+
+        if (fields.length === 0) {
+          console.error("No editable fields found for ID:", id);
+          return;
+        }
+
+        // Create an object to store updated values
+        let updatedData = {};
+
         fields.forEach((field) => {
-          const span = document.querySelector(
-            `.editable[data-id="${productId}"][data-field="${field}"]`
-          );
-          if (span) {
-            updatedData[field] = span.textContent.trim();
-          }
+          const fieldName = field.getAttribute("data-field");
+          const fieldValue = field.textContent.trim();
+          updatedData[fieldName] = fieldValue === "null" ? null : fieldValue;
         });
+
+        console.log("Updated data:", updatedData);
+
+        // Ensure ID is a valid number
+        id = parseInt(id);
+        if (isNaN(id)) {
+          console.error("Invalid ID:", id);
+          return;
+        }
+
+        // Update the row in Supabase
         const { error } = await supabase
           .from("products")
           .update(updatedData)
-          .eq("id", productId);
+          .eq("id", id);
+
         if (error) {
           console.error("Error updating product:", error);
-          alert("Error updating product!");
         } else {
-          alert("Product updated successfully!");
-          loadProducts();
+          console.log("Product updated successfully!");
+          loadProducts(); // Refresh the table after update
         }
       }
 

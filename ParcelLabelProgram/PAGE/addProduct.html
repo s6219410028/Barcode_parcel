@@ -127,13 +127,13 @@
       <input type="date" id="mfg" required />
 
       <label for="lot">LOT Number:</label>
-      <input type="text" id="lot" placeholder="Enter LOT number" required />
+      <input type="text" id="lot" placeholder="Enter LOT number" />
 
       <label for="exp">EXP (Expiration Date):</label>
-      <input type="date" id="exp" required />
+      <input type="date" id="exp" />
 
       <label for="unit">UNIT:</label>
-      <input type="text" id="unit" placeholder="Enter unit" required />
+      <input type="text" id="unit" placeholder="Enter unit" />
 
       <button class="btn" onclick="uploadToSupabase()">Save Product</button>
     </div>
@@ -209,23 +209,15 @@
       // Upload product data to Supabase
       async function uploadToSupabase() {
         const companyId = document.getElementById("companyId").value;
-        const productName = document.getElementById("productName").value;
-        const productNameTh = document.getElementById("productNameTh").value;
-        const barcode = document.getElementById("barcode").value;
-        const mfg = document.getElementById("mfg").value;
-        const lot = document.getElementById("lot").value;
-        const exp = document.getElementById("exp").value;
-        const unit = document.getElementById("unit").value;
+        const productName = document.getElementById("productName").value.trim();
+        const productNameTh = document.getElementById("productNameTh").value.trim();
+        const barcode = document.getElementById("barcode").value.trim();
+        const mfg = document.getElementById("mfg").value.trim() || null; // Set to null if empty
+        const lot = document.getElementById("lot").value.trim() || null; // Set to null if empty
+        const exp = document.getElementById("exp").value.trim() || null; // Set to null if empty
+        const unit = document.getElementById("unit").value.trim();
 
-        if (
-          !companyId ||
-          !productName ||
-          !barcode ||
-          !mfg ||
-          !lot ||
-          !exp ||
-          !unit
-        ) {
+        if (!companyId || !productName || !barcode) {
           alert("Please fill in all required fields.");
           return;
         }
@@ -234,12 +226,12 @@
           {
             company_id: parseInt(companyId),
             product_name_eng: productName,
-            product_name_th: productNameTh,
+            product_name_th: productNameTh || null,
             product_barcode: barcode,
             product_mfg: mfg,
             product_lot: lot,
             product_exp: exp,
-            unit: unit,
+            unit: unit || null, // Allow unit to be optional
           },
         ]);
 

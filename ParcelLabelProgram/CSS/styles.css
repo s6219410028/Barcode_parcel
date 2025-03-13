@@ -178,7 +178,7 @@ form select {
   }
   #print-container table {
     border-collapse: collapse;
-    width: 90%;
+    width: 100%;
     font-size: 12pt;
     margin: 0 auto 20mm auto;
     page-break-inside: avoid;

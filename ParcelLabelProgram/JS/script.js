@@ -55,13 +55,13 @@ function loadCompanyForm(companyId) {
       <label for="barcode${suffix}">Barcode:</label>
       <input type="text" id="barcode${suffix}" readonly />
       <label for="mfg${suffix}">MFG:</label>
-      <input type="text" id="mfg${suffix}" readonly />
+      <input type="text" id="mfg${suffix}" />
       <label for="lot${suffix}">LOT:</label>
-      <input type="text" id="lot${suffix}" readonly />
+      <input type="text" id="lot${suffix}" />
       <label for="exp${suffix}">EXP:</label>
-      <input type="text" id="exp${suffix}" readonly />
+      <input type="text" id="exp${suffix}" />
       <label for="unit${suffix}">UNIT:</label>
-      <input type="text" id="unit${suffix}" readonly />
+      <input type="text" id="unit${suffix}" />
       <button class="btn" onclick="printTableDynamic('${suffix}')">Print Label</button>
     </div>
   `;
@@ -110,13 +110,16 @@ function updateDropdownDynamic(suffix, barcode) {
   }
   document.getElementById(`productNameTh${suffix}`).value = product.product_name_th || "";
   document.getElementById(`barcode${suffix}`).value = product.product_barcode || "";
-  document.getElementById(`mfg${suffix}`).value = product.product_mfg || "";
-  document.getElementById(`lot${suffix}`).value = product.product_lot || "";
-  if (suffix === "A") {
-    document.getElementById(`exp${suffix}`).value = "";
-  } else {
-    document.getElementById(`exp${suffix}`).value = product.product_exp || "";
+  if (!document.getElementById(`mfg${suffix}`).value) {
+    document.getElementById(`mfg${suffix}`).value = product.product_mfg || "";
   }
+  if (!document.getElementById(`lot${suffix}`).value) {
+    document.getElementById(`lot${suffix}`).value = product.product_lot || "";
+  }
+  if (!document.getElementById(`exp${suffix}`).value) {
+    document.getElementById(`exp${suffix}`).value = suffix === "A" ? "" : product.product_exp || "";
+  }
+
   document.getElementById(`unit${suffix}`).value = product.unit || "";
 }
 
@@ -147,18 +150,15 @@ function generateTableForPrint(company, container) {
   let barcode = document.getElementById(`barcode${suffix}`).value;
   let mfg = document.getElementById(`mfg${suffix}`).value;
   let lot = document.getElementById(`lot${suffix}`).value;
+  let exp = document.getElementById(`exp${suffix}`).value;
   let unit = document.getElementById(`unit${suffix}`).value;
-  let exp = "";
-  if (company !== "companyA" && product) {
-    exp = product.product_exp || "";
-  }
 
   // Create table element.
   const table = document.createElement('table');
   table.style.borderCollapse = 'collapse';
-  table.style.width = '90%';
+  table.style.width = '100%';
   table.style.margin = '20px auto';
-  table.style.border = '1px solid black';
+  table.style.border = '2px solid black';
   const tableBody = table.createTBody();
 
   if (company === "companyA") {
@@ -169,7 +169,7 @@ function generateTableForPrint(company, container) {
     cell.innerHTML = `<h2 style="margin:0; padding:0px 0 20px 70px;">PRODUCT CODE :</h2>`;
     cell.style.textAlign = 'left';
     cell.colSpan = 2;
-    cell.style.borderBottom = '1px solid black';
+    cell.style.borderBottom = '2px solid black';
     cell.style.paddingTop = '20px';
 
     // Row 2: Product_Name_Eng (plain text, left aligned)
@@ -205,7 +205,7 @@ function generateTableForPrint(company, container) {
     cell.innerHTML = `<h2 style="margin:0; padding:5px 0;">บริษัทเอ็กซ์เพรสเมด จำกัด</h2>`;
     cell.style.textAlign = 'center';
     cell.colSpan = 2;
-    cell.style.border = '1px solid';
+    cell.style.border = '2px solid';
 
     // Single row for product name (choose Eng if available, else Thai)
     let displayName = productNameEng || productNameTh || "";
@@ -266,13 +266,13 @@ function generateTableForPrint(company, container) {
       cell.innerHTML = `<span style="font-size:1.25rem; font-weight:bold;">UNIT:</span> <span style="font-size:1.25rem;">${unit}</span>`;
       cell.style.textAlign = 'left';
       cell.colSpan = 2;
-      cell.style.borderTop = '1px solid black';
+      cell.style.borderTop = '2px solid black';
       cell.style.paddingLeft = '70px';
     } else {
       cell.innerHTML = `<span style="font-size:1.25rem; font-weight:bold;">บรรจุ:</span> <span style="font-size:1.25rem;">${unit}</span>`;
       cell.style.textAlign = 'center';
       cell.colSpan = 2;
-      cell.style.borderTop = '1px solid black';
+      cell.style.borderTop = '2px solid black';
     }
   }
 
@@ -317,6 +317,21 @@ function printTable(company) {
       </head>
       <body>
   `);
+
+
+  const printButton = previewWindow.document.createElement('button');
+  printButton.textContent = 'Print Labels';
+  printButton.className = 'no-print';
+  printButton.style.display = 'block';
+  printButton.style.margin = '40px auto';
+  printButton.style.padding = '10px';
+  printButton.onclick = () => previewWindow.print();
+  previewWindow.document.body.appendChild(printButton);
+
+  previewWindow.document.write(`</body></html>`);
+  previewWindow.document.close();
+
+
   const container = previewWindow.document.createElement('div');
   for (let i = 0; i < printCount; i++) {
     generateTableForPrint(company, container);
@@ -328,16 +343,6 @@ function printTable(company) {
   }
   previewWindow.document.body.appendChild(container);
 
-  const printButton = previewWindow.document.createElement('button');
-  printButton.textContent = 'Print Labels';
-  printButton.className = 'no-print';
-  printButton.style.display = 'block';
-  printButton.style.margin = '20px auto';
-  printButton.onclick = () => previewWindow.print();
-  previewWindow.document.body.appendChild(printButton);
-
-  previewWindow.document.write(`</body></html>`);
-  previewWindow.document.close();
 }
 
 // Preview & Print Labels for Multiple Companies (if needed)
